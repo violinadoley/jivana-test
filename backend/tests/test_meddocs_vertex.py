@@ -28,3 +28,10 @@ def test_parse_vertex_json_document_type() -> None:
         '{"document_type":"discharge_summary","fields":[],"medications":[]}'
     )
     assert parsed.document_type == DocumentType.DISCHARGE_SUMMARY
+
+
+def test_parse_vertex_json_string_confidence() -> None:
+    parsed = _parse_vertex_json(
+        '{"document_type":"unknown","classification_confidence":"high","fields":[],"medications":[]}'
+    )
+    assert parsed.classification_confidence == 0.9

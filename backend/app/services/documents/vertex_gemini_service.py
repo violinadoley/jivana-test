@@ -87,6 +87,23 @@ class _LiveVertexClient:
         return _parse_vertex_json(text)
 
 
+def _coerce_confidence(value: object) -> float:
+    if value is None:
+        return 0.0
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        labels = {"high": 0.9, "medium": 0.6, "med": 0.6, "low": 0.3}
+        if normalized in labels:
+            return labels[normalized]
+        try:
+            return float(normalized)
+        except ValueError:
+            return 0.0
+    return 0.0
+
+
 def _parse_vertex_json(text: str) -> VertexExtractOutput:
     try:
         data = json.loads(text)
@@ -110,7 +127,7 @@ def _parse_vertex_json(text: str) -> VertexExtractOutput:
     ]
     return VertexExtractOutput(
         document_type=doc_type,
-        classification_confidence=float(data.get("classification_confidence") or 0),
+        classification_confidence=_coerce_confidence(data.get("classification_confidence")),
         fields=fields,
         medications=list(data.get("medications") or []),
     )
