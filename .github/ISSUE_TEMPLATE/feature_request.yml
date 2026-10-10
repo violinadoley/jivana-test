@@ -1,0 +1,25 @@
+name: Feature / task
+description: New capability or improvement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+  - type: checkboxes
+    id: labels
+    attributes:
+      label: Labels (team adds in sidebar too)
+      options:
+        - label: frontend
+        - label: backend
+        - label: ai
+        - label: infra
+        - label: testing
+        - label: documentation

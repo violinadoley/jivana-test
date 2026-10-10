@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Activity and app data are written only via Firebase Admin SDK on Cloud Run.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

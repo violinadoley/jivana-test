@@ -1,0 +1,21 @@
+---
+description: Architecture and technology decisions for this starter monorepo
+alwaysApply: true
+---
+
+# Architecture standards
+
+- **Do not** generate, choose, rank, or steer the user toward a competition product idea.
+- Before recommending new technologies, dependencies, GCP services, or MCPs, read:
+  - `docs/architecture/technology-capability-matrix.md`
+  - `docs/architecture/mcp-and-tooling-catalogue.md` (when tooling or cloud integration is relevant)
+  - `docs/architecture/technology-decision-process.md`
+- **Inspect the repository** (code, workflows, env examples) before proposing changes; prefer the existing stack where suitable.
+- Distinguish **Verified** integrations from **Planned**, **Optional**, and **Absent** (see matrix)—do not treat README or `mcp.json` alone as proof something works in production.
+- Distinguish **Gemini API (`google-genai` + API key)** from **Gemini on Vertex AI** and from specialized APIs (Document AI, Vision, Agent Search).
+- Prefer **official, maintained** integrations; use Context7 or Google Developer Knowledge MCP for current API docs when unsure.
+- Minimize scope: no unnecessary services, MCPs, or infrastructure (see `engineering.mdc`, `mcp-usage.mdc`, `mcp-safety.mdc`).
+- Consider cost, security, privacy, latency, reliability, and `ai-evals/` when changing AI behavior.
+- **Ask before** installing MCPs, changing IAM, modifying cloud resources, deploying, or adding high-privilege tools.
+- After **approved** architecture decisions that change the baseline, update the matrix and catalogue when practical.
+- For structured architecture proposals, use `.cursor/skills/architecture-proposal/SKILL.md` and wait for approval before implementation.

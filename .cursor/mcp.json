@@ -1,0 +1,53 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-p",
+        "127.0.0.1:8085:8085",
+        "-e",
+        "GITHUB_OAUTH_CALLBACK_PORT",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_OAUTH_CALLBACK_PORT": "8085"
+      }
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "env": {
+        "CONTEXT7_API_KEY": "${env:CONTEXT7_API_KEY}"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    },
+    "gcp-resource-manager": {
+      "url": "https://cloudresourcemanager.googleapis.com/mcp"
+    },
+    "gcp-cloud-run": {
+      "url": "https://run.googleapis.com/mcp"
+    },
+    "gcp-cloud-storage": {
+      "url": "https://storage.googleapis.com/storage/mcp"
+    },
+    "gcp-firestore": {
+      "url": "https://firestore.googleapis.com/mcp"
+    },
+    "firebase": {
+      "command": "npx",
+      "args": ["-y", "firebase-tools@latest", "mcp"]
+    },
+    "sentry": {
+      "url": "https://mcp.sentry.dev/mcp"
+    },
+    "postman": {
+      "url": "https://mcp.postman.com/minimal"
+    }
+  }
+}

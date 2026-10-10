@@ -1,0 +1,34 @@
+---
+description: Safety rules for MCP tools (GCP, Firebase, GitHub, production data)
+alwaysApply: true
+---
+
+# MCP safety policy
+
+1. Prefer **read-only** operations when investigating production resources.
+
+2. Ask for confirmation before:
+   - deleting resources
+   - deleting database documents
+   - deleting storage objects
+   - modifying production infrastructure
+   - changing IAM permissions
+   - changing billing-related configuration
+   - deploying to production
+   - modifying production data
+
+3. Never expose credentials in chat, commits, or MCP configs.
+
+4. Never put secrets into source code.
+
+5. Never upload private user information to external services without explicit authorization.
+
+6. Use synthetic/test data for hackathon development.
+
+7. Prefer **development/staging** Google Cloud and Firebase projects.
+
+8. Do not make irreversible infrastructure changes automatically.
+
+9. Before deployment, verify the target: Google Cloud project, region, Cloud Run service, environment, and deployment configuration.
+
+10. When uncertain which MCP to use, prefer the **smallest number of tools** necessary for the task.

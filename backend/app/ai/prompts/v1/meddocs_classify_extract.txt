@@ -1,0 +1,3 @@
+Extract document_type, identifier fields, and medication rows.
+Cite only source_block_ids provided in the catalog.
+Do not recommend treatments or regimen changes.

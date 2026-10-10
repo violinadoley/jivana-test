@@ -1,0 +1,92 @@
+[
+  {
+    "case_id": "baseline_match",
+    "description": "Matching meds across three docs with verified evidence",
+    "expected_status": "completed",
+    "expected_discrepancy_types": []
+  },
+  {
+    "case_id": "dose_mismatch",
+    "description": "Dose differs between discharge and rx",
+    "expected_status": "needs_review",
+    "expected_discrepancy_types": ["dose_mismatch"]
+  },
+  {
+    "case_id": "omitted_med",
+    "description": "Med on discharge missing from rx",
+    "expected_status": "needs_review",
+    "expected_discrepancy_types": ["omitted_med"]
+  },
+  {
+    "case_id": "conflicting_strength",
+    "description": "Strength conflict",
+    "expected_status": "needs_review",
+    "expected_discrepancy_types": ["conflicting_strength"]
+  },
+  {
+    "case_id": "documented_change",
+    "description": "Intentional change still requires review",
+    "expected_status": "needs_review",
+    "expected_discrepancy_types": ["documented_change"]
+  },
+  {
+    "case_id": "missing_required_field",
+    "description": "Missing MRN on a document",
+    "expected_status": "needs_review",
+    "expected_finding_codes": ["MISSING_REQUIRED_FIELD"]
+  },
+  {
+    "case_id": "invalid_source_block_id",
+    "description": "Unknown block id rejected",
+    "expected_status": "needs_review",
+    "expected_finding_codes": ["UNSUPPORTED_EVIDENCE_REFERENCE"]
+  },
+  {
+    "case_id": "docai_misconfigured",
+    "description": "Configured but invalid processor fails",
+    "expected_status": "failed",
+    "expected_error_code": "DOCUMENT_AI_MISCONFIGURED"
+  },
+  {
+    "case_id": "docai_unconfigured_vertex_only",
+    "description": "Vertex-only path with weak evidence",
+    "expected_status": "needs_review",
+    "weak_evidence": true
+  },
+  {
+    "case_id": "vertex_only_matching_meds",
+    "description": "Matching meds but vertex_only blocks",
+    "expected_status": "needs_review",
+    "weak_evidence": true
+  },
+  {
+    "case_id": "cross_document_block_id",
+    "description": "Cross-doc block citation rejected",
+    "expected_status": "needs_review",
+    "expected_finding_codes": ["CROSS_DOCUMENT_EVIDENCE_REFERENCE"]
+  },
+  {
+    "case_id": "mrn_mismatch",
+    "description": "MRN differs across documents",
+    "expected_status": "needs_review",
+    "expected_finding_codes": ["MRN_MISMATCH"]
+  },
+  {
+    "case_id": "ambiguous_match",
+    "description": "Ambiguous medication pairing",
+    "expected_status": "needs_review",
+    "expected_discrepancy_types": ["ambiguous_match"]
+  },
+  {
+    "case_id": "low_quality_ocr",
+    "description": "Low evidence blocks force review",
+    "expected_status": "needs_review",
+    "weak_evidence": true
+  },
+  {
+    "case_id": "duplicate_document",
+    "description": "Duplicate upload hash",
+    "expected_status": "needs_review",
+    "expected_finding_codes": ["DUPLICATE_DOCUMENT"]
+  }
+]

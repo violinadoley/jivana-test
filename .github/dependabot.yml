@@ -1,0 +1,31 @@
+# Dependabot version updates — opens PRs against develop (configure default branch in GitHub if needed).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /frontend
+    target-branch: develop
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      frontend-production:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@playwright/*"
+          - "eslint*"
+          - "shadcn"
+          - "serve"
+
+  - package-ecosystem: pip
+    directory: /backend
+    target-branch: develop
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: monthly

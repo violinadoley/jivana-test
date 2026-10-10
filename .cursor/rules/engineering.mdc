@@ -1,0 +1,16 @@
+---
+description: Core engineering standards for this monorepo
+alwaysApply: true
+---
+
+# Engineering
+
+- Branch from `develop`; never commit directly to `main` or `develop`.
+- Every meaningful change goes through a PR with CI green.
+- Do not invent GCP project IDs, domains, or secrets — use placeholders and document manual setup.
+- Do not claim deployments succeeded without verification.
+- Match existing patterns in `backend/app` and `frontend/`.
+- Update tests when behavior changes; update docs when architecture or workflow changes.
+- Minimize scope — no unnecessary dependencies or microservices.
+- Preserve AI layout under `backend/app/ai/` (versioned prompts, not buried strings).
+- Run backend `ruff`, `mypy`, `pytest` and frontend lint/typecheck/build before declaring work complete.

@@ -1,0 +1,13 @@
+---
+description: Security constraints
+alwaysApply: true
+---
+
+# Security
+
+- Never commit secrets (`.env`, keys, service account JSON, PEM files).
+- Never add long-lived GCP service account keys to GitHub Actions — use OIDC/WIF per docs/setup/github-google-oidc.md.
+- Do not log API keys, tokens, or unnecessary PII.
+- Do not point local dev at production Firestore or production secrets.
+- Do not disable CI security checks to "make it pass" without team agreement.
+- Production config changes require explicit review.

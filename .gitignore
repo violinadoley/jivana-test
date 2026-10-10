@@ -1,0 +1,52 @@
+# Environment
+.env
+.env.*
+!.env.example
+!**/.env.example
+!**/.env.local.example
+
+# Secrets / credentials
+*-service-account*.json
+service-account*.json
+firebase-adminsdk*.json
+credentials.json
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Local MCP overrides (keep team .cursor/mcp.json committed)
+.cursor/mcp.local.json
+.cursor/mcp.override.json
+
+# Logs
+*.log
+
+# AI eval artifacts
+ai-evals/results/*
+!ai-evals/results/.gitkeep
+
+# Playwright
+frontend/playwright-report/
+frontend/test-results/

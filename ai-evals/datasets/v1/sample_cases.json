@@ -1,0 +1,8 @@
+[
+  {
+    "id": "placeholder-001",
+    "input": "Hello",
+    "expect_contains": [],
+    "notes": "TODO: Add real expectations after product prompts are defined."
+  }
+]

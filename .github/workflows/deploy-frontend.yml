@@ -1,0 +1,171 @@
+# MANUAL SETUP REQUIRED: Firebase Hosting + rules on the same GCP project, WIF deploy SA.
+# Jobs: deploy-hosting (Hosting), deploy-firebase-rules (Firestore/Storage rules — fails workflow on 403).
+# See docs/setup/firebase-hosting.md and docs/setup/firebase-backend.md
+
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-frontend
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-hosting:
+    if: vars.GCP_PROJECT_ID != '' && vars.PUBLIC_API_URL != ''
+    runs-on: ubuntu-latest
+    environment: gcp
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Validate required variables
+        run: |
+          set -euo pipefail
+          for v in GCP_PROJECT_ID GCP_WIF_PROVIDER GCP_WIF_SERVICE_ACCOUNT PUBLIC_API_URL; do
+            if [ -z "${!v:-}" ]; then
+              echo "::error::Missing variable $v"
+              exit 1
+            fi
+          done
+        env:
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          GCP_WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+          GCP_WIF_SERVICE_ACCOUNT: ${{ vars.GCP_WIF_SERVICE_ACCOUNT }}
+          PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
+
+      - id: auth
+        name: Authenticate to Google Cloud (OIDC)
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_WIF_SERVICE_ACCOUNT }}
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve Firebase web client env
+        id: firebase_web
+        run: |
+          PROJECT="${{ vars.GCP_PROJECT_ID }}"
+          STORAGE_BUCKET="${{ vars.FIREBASE_STORAGE_BUCKET }}"
+          if [ -z "$STORAGE_BUCKET" ]; then
+            STORAGE_BUCKET="${PROJECT}.firebasestorage.app"
+          fi
+          AUTH_REQUIRED="${{ vars.NEXT_PUBLIC_AUTH_REQUIRED }}"
+          if [ -z "$AUTH_REQUIRED" ]; then
+            AUTH_REQUIRED="${{ vars.AUTH_REQUIRED }}"
+          fi
+          if [ -z "$AUTH_REQUIRED" ]; then
+            AUTH_REQUIRED="false"
+          fi
+          {
+            echo "project_id=${PROJECT}"
+            echo "auth_domain=${PROJECT}.firebaseapp.com"
+            echo "storage_bucket=${STORAGE_BUCKET}"
+            echo "auth_required=${AUTH_REQUIRED}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build static site
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
+          NEXT_PUBLIC_AUTH_REQUIRED: ${{ steps.firebase_web.outputs.auth_required }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ vars.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ steps.firebase_web.outputs.auth_domain }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ steps.firebase_web.outputs.project_id }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ steps.firebase_web.outputs.storage_bucket }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_POSTHOG_KEY: ${{ vars.NEXT_PUBLIC_POSTHOG_KEY }}
+          NEXT_PUBLIC_POSTHOG_HOST: ${{ vars.NEXT_PUBLIC_POSTHOG_HOST }}
+          NEXT_PUBLIC_APP_ENV: cloud
+          NEXT_PUBLIC_POSTHOG_ENABLED: ${{ vars.NEXT_PUBLIC_POSTHOG_ENABLED }}
+          NEXT_PUBLIC_POSTHOG_SESSION_REPLAY: ${{ vars.NEXT_PUBLIC_POSTHOG_SESSION_REPLAY }}
+
+      - name: Configure hosting site id
+        run: |
+          jq --arg site "${{ vars.GCP_PROJECT_ID }}" '.hosting.site = $site' firebase.json > firebase.tmp.json
+          mv firebase.tmp.json firebase.json
+
+      - name: Deploy to Firebase Hosting
+        run: npx --yes firebase-tools@14.14.0 deploy --only hosting --project "${{ vars.GCP_PROJECT_ID }}"
+
+      - name: Frontend URL
+        run: |
+          SITE="https://${{ vars.GCP_PROJECT_ID }}.web.app"
+          echo "::notice title=Frontend (Firebase Hosting)::${SITE}"
+          echo "To set the GitHub repo Website link, run: ./scripts/set-github-repo-links.sh \"${SITE}\" \"<your-cloud-run-url>/docs\""
+
+  deploy-firebase-rules:
+    needs: deploy-hosting
+    if: vars.GCP_PROJECT_ID != '' && vars.PUBLIC_API_URL != ''
+    runs-on: ubuntu-latest
+    environment: gcp
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Validate deploy variables
+        run: |
+          set -euo pipefail
+          for v in GCP_PROJECT_ID GCP_WIF_PROVIDER GCP_WIF_SERVICE_ACCOUNT; do
+            if [ -z "${!v:-}" ]; then
+              echo "::error::Missing variable $v"
+              exit 1
+            fi
+          done
+        env:
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          GCP_WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+          GCP_WIF_SERVICE_ACCOUNT: ${{ vars.GCP_WIF_SERVICE_ACCOUNT }}
+
+      - name: Authenticate to Google Cloud (OIDC)
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_WIF_SERVICE_ACCOUNT }}
+
+      - name: Configure storage bucket for rules deploy
+        run: |
+          PROJECT="${{ vars.GCP_PROJECT_ID }}"
+          BUCKET="${{ vars.FIREBASE_STORAGE_BUCKET }}"
+          if [ -z "$BUCKET" ]; then
+            BUCKET="${PROJECT}.firebasestorage.app"
+          fi
+          jq --arg b "$BUCKET" '.storage = [{"bucket": $b, "rules": "storage.rules"}]' firebase.json > firebase.tmp.json
+          mv firebase.tmp.json firebase.json
+
+      - name: Deploy Firestore rules
+        run: |
+          npx --yes firebase-tools@14.14.0 deploy \
+            --only firestore:rules \
+            --project "${{ vars.GCP_PROJECT_ID }}"
+
+      - name: Deploy Storage rules
+        run: |
+          npx --yes firebase-tools@14.14.0 deploy \
+            --only storage \
+            --project "${{ vars.GCP_PROJECT_ID }}"
+
+      - name: Rules deploy failed — manual release step required
+        if: failure()
+        run: |
+          echo "::error::Firebase rules deploy failed. Hosting may already be updated. Publish frontend/firestore.rules and frontend/storage.rules in Firebase Console, or grant github-deploy IAM per docs/setup/firebase-backend.md"

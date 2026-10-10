@@ -1,0 +1,8 @@
+{
+  "review_by": "2026-04-01",
+  "notes": "Firebase JS SDK pulls @grpc/grpc-js; upgrade firebase when advisory fixes land.",
+  "advisories": [
+    "GHSA-m9gg-hp2v-232j",
+    "GHSA-f596-whhp-79r4"
+  ]
+}

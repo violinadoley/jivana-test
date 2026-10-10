@@ -1,0 +1,13 @@
+---
+description: Testing expectations
+alwaysApply: true
+---
+
+# Testing
+
+- Do not bypass tests or skip CI checks without documenting why.
+- Add/update pytest tests for backend behavior changes.
+- Run `ai-evals/regression` when changing prompts, models, or AI services.
+- Add Playwright coverage for new critical user journeys.
+- Use mocks for Gemini in unit tests; avoid live API calls in default CI.
+- Do not use production data in automated tests.

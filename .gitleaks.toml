@@ -1,0 +1,13 @@
+title = "Hackathon starter gitleaks config"
+
+[extend]
+useDefault = true
+
+# Example env values in docs (not real secrets)
+[[rules.allowlists]]
+description = "Placeholder env examples"
+regexes = ['''GEMINI_API_KEY=your-key-here''', '''AIzaSy.*example''']
+
+# Firebase web API keys are restricted by domain; still avoid committing real prod keys.
+[[rules.allowlists]]
+paths = ['''docs/''', '''\.env\.example$''', '''\.env\.local\.example$''']

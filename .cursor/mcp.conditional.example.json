@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "gcp-bigquery": {
+      "url": "https://bigquery.googleapis.com/mcp"
+    },
+    "gcp-maps-grounding-lite": {
+      "url": "https://mapstools.googleapis.com/mcp"
+    },
+    "gcp-maps-code-assist": {
+      "url": "https://mapscodeassist.googleapis.com/mcp"
+    },
+    "google-analytics-data": {
+      "url": "https://analyticsdata.googleapis.com/mcp/v1"
+    },
+    "figma": {
+      "url": "https://mcp.figma.com/mcp"
+    },
+    "huggingface": {
+      "url": "https://huggingface.co/mcp?login"
+    }
+  }
+}

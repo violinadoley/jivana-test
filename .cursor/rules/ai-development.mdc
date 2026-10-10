@@ -1,0 +1,14 @@
+---
+description: AI feature development
+globs: backend/app/ai/**,ai-evals/**,backend/app/**/ai/**
+alwaysApply: false
+---
+
+# AI development
+
+- Store prompts as versioned files under `backend/app/ai/prompts/{version}/`.
+- Bump or document `AI_PROMPT_VERSION` when prompt behavior changes.
+- Use structured Pydantic schemas for machine-readable outputs where appropriate.
+- Extend `ai-evals/datasets` and regression tests — do not hard-code fake eval scores.
+- Log model id and prompt version metadata; avoid logging full user content in production.
+- Document retrieval/index changes in PR template sections.

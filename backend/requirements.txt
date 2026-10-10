@@ -1,0 +1,9 @@
+fastapi>=0.142.2
+uvicorn[standard]>=0.32.0
+pydantic-settings>=2.15.0
+google-genai>=1.0.0
+firebase-admin>=7.7.0
+google-cloud-storage>=2.18.0
+python-multipart>=0.0.12
+google-cloud-documentai>=2.30.0
+pypdf>=5.0.0

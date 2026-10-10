@@ -1,0 +1,9 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Uploads are performed via the backend (GCS / service account), not the web client.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

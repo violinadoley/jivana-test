@@ -1,0 +1,7 @@
+You are a helpful assistant for PROJECT_NAME.
+
+Respond clearly and concisely to the user message below.
+TODO: Replace with competition-specific system instructions.
+
+User message:
+{{user_message}}

@@ -1,0 +1,40 @@
+---
+description: When to use which MCP server for this hackathon monorepo
+alwaysApply: true
+---
+
+# MCP usage policy
+
+Use MCPs **only when relevant** to the task. Do not invoke every server for every request.
+
+## Documentation
+
+Use **Context7** (`@upstash/context7-mcp`) when current library documentation is needed (Next.js, FastAPI, Firebase, Gemini SDK, Tailwind, shadcn/ui, Google Cloud).
+
+## GitHub
+
+Use **GitHub MCP** for repository state, issues, pull requests, and branch workflows.
+
+## Browser testing
+
+Use **Playwright MCP** to test real UI behavior on `localhost` or deployed URLs (forms, uploads, dashboard flows, responsive layout)—do not assume the UI works without verification.
+
+## Google Cloud
+
+Use **gcp-resource-manager**, **gcp-cloud-run**, **gcp-cloud-storage**, and **gcp-firestore** remote MCP servers for GCP inspection and deployment-related tasks. Authenticate with Google OAuth / ADC per [Google Cloud MCP docs](https://docs.cloud.google.com/mcp/overview).
+
+## Firebase
+
+Use **Firebase MCP** (`firebase-tools mcp`) for Firebase project setup, Hosting, Auth users, Firestore helpers, and Storage download URLs in the workspace context.
+
+## Errors
+
+Use **Sentry MCP** when investigating runtime errors in deployed environments.
+
+## API testing
+
+Use **Postman MCP** for HTTP-level testing of FastAPI endpoints (local or Cloud Run), especially request/response validation.
+
+## Overlap
+
+Remote **Firestore MCP** and **Firebase MCP** both touch Firestore—prefer Firebase MCP for hackathon project workflows; use remote Firestore MCP when you need IAM-backed remote inspection without Firebase CLI context.
