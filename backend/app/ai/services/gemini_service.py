@@ -21,13 +21,34 @@ class GeminiService(AIService):
     def execution_context(self) -> AIExecutionContext:
         return AIExecutionContext.from_settings(self._settings)
 
+    def _uses_vertex_adc(self) -> bool:
+        key = (self._settings.gemini_api_key or "").strip()
+        return not key and bool(self._settings.effective_gcp_project_id)
+
     @property
     def client(self) -> genai.Client:
         if self._client is None:
-            if not self._settings.gemini_api_key:
+            if self._uses_vertex_adc():
+                project = self._settings.effective_gcp_project_id
+                if not project:
+                    raise AIGenerationError(
+                        "Gemini is not configured. Set GEMINI_API_KEY or GCP project for Vertex."
+                    )
+                self._client = genai.Client(
+                    vertexai=True,
+                    project=project,
+                    location=self._settings.gcp_location,
+                )
+            elif self._settings.gemini_api_key:
+                self._client = genai.Client(api_key=self._settings.gemini_api_key)
+            else:
                 raise AIGenerationError("Gemini API key is not configured. Set GEMINI_API_KEY.")
-            self._client = genai.Client(api_key=self._settings.gemini_api_key)
         return self._client
+
+    def _model_id(self) -> str:
+        if self._uses_vertex_adc():
+            return self._settings.vertex_model
+        return self._settings.gemini_model
 
     def generate_text(self, prompt: str) -> str:
         ctx = self.execution_context
@@ -35,14 +56,15 @@ class GeminiService(AIService):
         logger.info(
             "AI generate_text",
             extra={
-                "model_id": ctx.model_id,
+                "model_id": self._model_id(),
                 "prompt_version": ctx.prompt_version,
                 "retrieval_version": ctx.retrieval_version,
+                "vertex_adc": self._uses_vertex_adc(),
             },
         )
         try:
             response = self.client.models.generate_content(
-                model=self._settings.gemini_model,
+                model=self._model_id(),
                 contents=composed,
             )
         except genai_errors.ClientError as exc:

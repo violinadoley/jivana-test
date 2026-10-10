@@ -51,7 +51,7 @@ Add to `backend/.env` locally and Cloud Run deploy env:
 | `DOCUMENT_AI_PROCESSOR_ID` | No | Empty = Vertex-only path |
 | `DOCUMENT_AI_LOCATION` | When DocAI set | |
 
-Generic **`GEMINI_API_KEY`** remains for `/api/v1/ai/generate` only. MedDocs uses **Vertex ADC** on Cloud Run.
+**`/api/v1/ai/generate`:** uses **`GEMINI_API_KEY`** locally when set; on Cloud Run, if the key is empty, the backend uses **Vertex ADC** (same project/region as MedDocs). MedDocs extraction always uses **Vertex ADC**.
 
 ## Verify
 
