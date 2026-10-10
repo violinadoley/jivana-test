@@ -30,11 +30,13 @@ class BigQueryProductivityService:
         if not project or not dataset:
             return
         table_id = f"{project}.{dataset}.{table}"
+        now = datetime.now(UTC)
         row = {
             "event_type": event_type,
             "user_id": user_id,
             "metadata": metadata or {},
-            "recorded_at": datetime.now(UTC).isoformat(),
+            # Streaming insert expects TIMESTAMP-compatible string (not all ISO-8601 variants).
+            "recorded_at": now.strftime("%Y-%m-%d %H:%M:%S.%f"),
         }
         try:
             from google.cloud import bigquery
