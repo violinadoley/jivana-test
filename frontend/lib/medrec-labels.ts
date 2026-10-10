@@ -39,3 +39,13 @@ const DETECTION_LABELS: Record<string, string> = {
 export function labelDetectionType(type: string): string {
   return DETECTION_LABELS[type] ?? type.replace(/_/g, " ");
 }
+
+const TRANSITION_LABELS: Record<string, string> = {
+  discharge: "Discharge",
+  admission: "Admission",
+  transfer: "Transfer",
+};
+
+export function labelTransitionType(type: string): string {
+  return TRANSITION_LABELS[type] ?? type;
+}

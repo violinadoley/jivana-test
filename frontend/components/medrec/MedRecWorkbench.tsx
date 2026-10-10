@@ -35,6 +35,7 @@ import {
   labelCaseStatus,
   labelDetectionType,
   labelItemStatus,
+  labelTransitionType,
 } from "@/lib/medrec-labels";
 import { cn } from "@/lib/utils";
 import type {
@@ -254,6 +255,9 @@ export function MedRecWorkbench() {
 
   const [newLabel, setNewLabel] = useState("Discharge review — Sample patient");
   const [newMrn, setNewMrn] = useState("TRAIN-1001");
+  const [newTransition, setNewTransition] = useState<"discharge" | "admission" | "transfer">(
+    "discharge"
+  );
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [finalizeNote, setFinalizeNote] = useState("");
   const [weakAck, setWeakAck] = useState(false);
@@ -317,7 +321,7 @@ export function MedRecWorkbench() {
       const job = await createMedRecCase({
         case_label: newLabel,
         synthetic_mrn: newMrn || null,
-        transition_type: "discharge",
+        transition_type: newTransition,
       });
       await refreshList();
       await loadCase(job.job_id);
@@ -531,12 +535,26 @@ export function MedRecWorkbench() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">New discharge review</CardTitle>
+              <CardTitle className="text-lg">New medication review</CardTitle>
               <CardDescription>
-                Admission and transfer workflows are coming in a future release.
+                Discharge, admission, or transfer — same compare-and-sign-off workflow.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
+              <label className="block text-xs font-medium text-muted-foreground">
+                Care transition
+                <select
+                  className="mt-1 w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm"
+                  value={newTransition}
+                  onChange={(e) =>
+                    setNewTransition(e.target.value as "discharge" | "admission" | "transfer")
+                  }
+                >
+                  <option value="discharge">Discharge</option>
+                  <option value="admission">Admission</option>
+                  <option value="transfer">Transfer</option>
+                </select>
+              </label>
               <input
                 className="w-full rounded-md border border-border px-2 py-1.5 text-sm"
                 value={newLabel}
@@ -552,7 +570,7 @@ export function MedRecWorkbench() {
                 placeholder="Medical record number (use training ID in demo)"
               />
               <Button type="button" disabled={busy} onClick={() => void createCase()}>
-                Start new discharge review
+                Start new {labelTransitionType(newTransition).toLowerCase()} review
               </Button>
             </CardContent>
           </Card>
@@ -583,7 +601,8 @@ export function MedRecWorkbench() {
                     )}
                   </div>
                   <CardDescription>
-                    {selected.documents.length} document
+                    {labelTransitionType(selected.transition_type)} · {selected.documents.length}{" "}
+                    document
                     {selected.documents.length === 1 ? "" : "s"} uploaded ·{" "}
                     {selected.discrepancy_items.length} medication line
                     {selected.discrepancy_items.length === 1 ? "" : "s"} to review

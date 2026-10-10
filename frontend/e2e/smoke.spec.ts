@@ -6,6 +6,12 @@ test.describe("Critical paths", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });
 
+  test("SMART launch page loads", async ({ page }) => {
+    await page.goto("/smart/launch?iss=https%3A%2F%2Fexample.fhir&launch=demo");
+    await expect(page.getByRole("heading", { name: /SMART on FHIR launch/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open JIVANA workspace/i })).toBeVisible();
+  });
+
   test("dashboard route loads", async ({ page }) => {
     await page.goto("/dashboard");
     const mvp = page.getByRole("heading", {

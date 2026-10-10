@@ -2,29 +2,25 @@
 
 **Canonical design:** [jivana-design-and-operations.md](./jivana-design-and-operations.md)
 
-## Shipped (local — verify before push)
+## Shipped (production — project-bf77a013-c0b3-413c-a75)
 
-- [x] Eight workspace modules (overview, copilot, search, documents, meetings, research, workflows, insights)
-- [x] Platform capabilities API + UI
-- [x] Multi-step workflow agent with visible tool steps
-- [x] Research UI shows sources
-- [x] Deploy workflow env for Vertex Search, BigQuery, Healthcare FHIR
-- [x] Institutional knowledge + Vertex Search merge
+- [x] Hybrid workspace + discharge-first med rec workbench
+- [x] Platform capabilities + demo-readiness + verify scripts
+- [x] GCP: Vertex Search, BigQuery, Document AI, FHIR, Firestore, ADK on Cloud Run
+- [x] Admission / transfer / discharge case types (API + UI)
+- [x] SMART on FHIR config + launch page (demo stub; OAuth in prod is manual)
+- [x] Agent Engine env hook + in-process ADK fallback
+- [x] Playwright local tab journey + deployed hosting smoke (`npm run test:e2e:deployed`)
+- [x] Open Graph / Twitter metadata + favicon
+- [x] Legacy `violinadoley/project` repo archived
 
-## GCP console (your project)
+## Optional hardening (when you have EHR vendor access)
 
-- [ ] Create Vertex AI Search data store + ingest policy corpus
-- [ ] Create BigQuery `productivity_events` table + IAM
-- [ ] Create Healthcare FHIR store + IAM (if demoing FHIR export)
-- [ ] Set GitHub Actions vars matching [vertex-ai-search-bigquery.md](../setup/vertex-ai-search-bigquery.md)
+- [ ] Full SMART OAuth token exchange + patient context session
+- [ ] Deploy agents to Vertex AI Agent Engine and set `VERTEX_AGENT_ENGINE_ID`
+- [ ] Set `SMART_CLIENT_ID` + `SMART_APP_LAUNCH_URL` on Cloud Run / GitHub vars
 
-## Phase 2 (post-hackathon)
+## Competition / polish
 
-- [x] Google ADK in-process agents (copilot, research, meetings, workflow plan) — `AGENT_BACKEND`
-- [x] `GET /platform/demo-readiness` + `scripts/verify-platform.sh`
-- [ ] Vertex AI Agent Engine hosted runtime (optional — see `docs/setup/vertex-ai-agent-engine.md`)
-- [ ] SMART on FHIR EHR embed
-- [x] Playwright hybrid workspace tab journey (CI)
-- [ ] Playwright against deployed URL with live API
-- [ ] OG images / favicon final brand
-- [ ] Archive legacy `violinadoley/project` repo
+- [ ] 3-minute demo video + submission URL
+- [ ] Custom OG image asset (currently uses hero photo)

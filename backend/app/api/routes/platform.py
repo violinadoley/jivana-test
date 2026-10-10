@@ -152,6 +152,18 @@ def platform_capabilities(
             configured=adk_importable() and resolve_agent_backend(settings) == "adk",
             description="Copilot, research, meetings, and workflow planning when ADK is active.",
         ),
+        CapabilityStatus(
+            id="vertex_agent_engine",
+            label="Vertex AI Agent Engine",
+            configured=settings.vertex_agent_engine_configured,
+            description="Optional hosted agent runtime; in-process ADK when unset.",
+        ),
+        CapabilityStatus(
+            id="smart_on_fhir",
+            label="SMART on FHIR launch",
+            configured=settings.smart_on_fhir_configured,
+            description="EHR embed via SMART configuration and /smart/launch.",
+        ),
     ]
     return PlatformCapabilitiesResponse(
         environment=settings.environment,

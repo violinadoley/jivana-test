@@ -14,7 +14,8 @@ JIVANA runs **Google ADK in-process** on Cloud Run today (`AGENT_BACKEND=auto|ad
 |-------|--------|
 | ADK agents in `backend/app/ai/adk/` | Implemented |
 | Cloud Run + `AGENT_BACKEND` | Supported |
-| Agent Engine deployment manifest | Not in repo — manual GCP setup |
+| `VERTEX_AGENT_ENGINE_ID` + `agent_engine_client.py` | Stub — falls back to in-process ADK |
+| Agent Engine remote invoke | Manual GCP deploy + future wiring |
 
 ## Migration outline (when approved)
 

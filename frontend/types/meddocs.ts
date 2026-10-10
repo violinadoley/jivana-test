@@ -147,7 +147,7 @@ export type MedReconciliationJob = {
 export type CaseCreateRequest = {
   case_label?: string;
   synthetic_mrn?: string | null;
-  transition_type?: "discharge";
+  transition_type?: "discharge" | "admission" | "transfer";
 };
 
 export type ItemReviewPatchRequest = {

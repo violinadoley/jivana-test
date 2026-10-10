@@ -11,6 +11,7 @@ from app.api.routes import (
     meetings,
     platform,
     research,
+    smart,
     workflows,
 )
 from fastapi import APIRouter
@@ -29,3 +30,4 @@ api_router.include_router(research.router)
 api_router.include_router(workflows.router)
 api_router.include_router(analytics.router)
 api_router.include_router(platform.router)
+api_router.include_router(smart.router)

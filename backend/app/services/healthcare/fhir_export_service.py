@@ -83,6 +83,10 @@ def build_reconciliation_bundle(job: MedReconciliationJob) -> dict[str, Any]:
                 }
             )
 
+    review_note: str
+    reviewer: str
+    reviewed_at: str | None
+
     review = job.human_review
     if review:
         review_note = review.note or "Human review recorded"

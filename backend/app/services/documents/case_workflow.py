@@ -28,13 +28,21 @@ def reviewer_from_user(user: dict[str, Any] | None) -> tuple[str | None, str]:
     return uid, display
 
 
-def assert_discharge_transition(transition_type: str) -> None:
-    if transition_type != "discharge":
+_SUPPORTED_TRANSITIONS = frozenset({"discharge", "admission", "transfer"})
+
+
+def assert_supported_transition(transition_type: str) -> None:
+    if transition_type not in _SUPPORTED_TRANSITIONS:
         raise AppException(
             "UNSUPPORTED_TRANSITION",
-            "Only discharge medication reconciliation is supported in this MVP.",
+            "transition_type must be discharge, admission, or transfer.",
             status_code=422,
         )
+
+
+def assert_discharge_transition(transition_type: str) -> None:
+    """Backward-compatible alias."""
+    assert_supported_transition(transition_type)
 
 
 def begin_item_review(
