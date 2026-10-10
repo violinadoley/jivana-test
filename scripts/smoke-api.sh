@@ -18,4 +18,8 @@ echo "Checking GET ${BASE}/ready"
 body=$(curl -fsS "${BASE}/ready")
 echo "$body" | grep -q '"status"[[:space:]]*:[[:space:]]*"ready"'
 
+echo "Checking GET ${BASE}/api/v1/platform/demo-readiness"
+body=$(curl -fsS "${BASE}/api/v1/platform/demo-readiness")
+echo "$body" | grep -q '"core_demo_ready"'
+
 echo "Smoke tests passed."

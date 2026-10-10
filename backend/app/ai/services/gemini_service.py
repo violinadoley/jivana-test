@@ -3,7 +3,7 @@ from typing import Any
 
 from app.ai.base import AIService
 from app.ai.models.registry import AIExecutionContext
-from app.ai.prompts.loader import render_generate_text_prompt
+from app.ai.prompts.loader import render_generate_text_prompt, render_named_prompt
 from app.core.config import Settings
 from app.core.exceptions import AIGenerationError
 from google import genai
@@ -54,9 +54,13 @@ class GeminiService(AIService):
             return self._settings.vertex_model
         return self._settings.gemini_model
 
-    def generate_text(self, prompt: str) -> str:
+    def generate_text(self, prompt: str, *, institutional_context: str = "") -> str:
         ctx = self.execution_context
-        composed = render_generate_text_prompt(prompt, version=self._settings.ai_prompt_version)
+        composed = render_generate_text_prompt(
+            prompt,
+            version=self._settings.ai_prompt_version,
+            institutional_context=institutional_context,
+        )
         logger.info(
             "AI generate_text",
             extra={
@@ -78,6 +82,24 @@ class GeminiService(AIService):
             logger.exception("Unexpected Gemini error")
             raise AIGenerationError("Unable to generate a response.") from exc
 
+        text = getattr(response, "text", None)
+        if not text:
+            raise AIGenerationError("Model returned an empty response.")
+        return str(text).strip()
+
+    def generate_from_template(self, version: str, name: str, **replacements: str) -> str:
+        composed = render_named_prompt(version, name, **replacements)
+        try:
+            response = self.client.models.generate_content(
+                model=self._model_id(),
+                contents=composed,
+            )
+        except genai_errors.ClientError as exc:
+            logger.exception("Gemini client error")
+            raise AIGenerationError("Unable to generate a response.") from exc
+        except Exception as exc:
+            logger.exception("Unexpected Gemini error")
+            raise AIGenerationError("Unable to generate a response.") from exc
         text = getattr(response, "text", None)
         if not text:
             raise AIGenerationError("Model returned an empty response.")

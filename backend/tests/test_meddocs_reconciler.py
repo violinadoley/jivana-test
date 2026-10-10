@@ -55,7 +55,8 @@ def test_baseline_match_only_when_zero_discrepancies() -> None:
     data.identifier_fields = {"p": {"mrn": "1"}, "d": {"mrn": "1"}, "r": {"mrn": "1"}}
     result = reconcile_medications(data)
     assert result.discrepancies == []
-    assert compute_job_status(result.discrepancies, result.findings, False) == JobStatus.COMPLETED
+    status = compute_job_status(result.discrepancies, result.findings, False)
+    assert status == JobStatus.NEEDS_REVIEW
 
 
 def test_documented_change_routes_needs_review() -> None:

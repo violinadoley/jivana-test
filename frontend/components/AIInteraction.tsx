@@ -1,10 +1,17 @@
 "use client";
 
-import { Loader2, RotateCcw, Send, ThumbsDown, ThumbsUp } from "lucide-react";
+import {
+  Loading03Icon,
+  RefreshIcon,
+  SentIcon,
+  ThumbsDownIcon,
+  ThumbsUpIcon,
+} from "@hugeicons/core-free-icons";
 import { useEffect, useRef, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { HugeIcon } from "@/components/ui/huge-icon";
 import {
   Card,
   CardContent,
@@ -89,16 +96,16 @@ export function AIInteraction() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>AI Assistant</CardTitle>
+        <CardTitle>Knowledge assistant</CardTitle>
         <CardDescription>
-          Send a message to the backend Gemini service. TODO: customize prompts
-          and domain logic for your hackathon use case.
+          Answers use your institutional policy library when relevant, then complete the response
+          with secure server-side AI.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <form onSubmit={handleSubmit} className="space-y-3">
           <Textarea
-            placeholder="Ask anything…"
+            placeholder="Ask about a workflow, policy, or document…"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={4}
@@ -109,12 +116,16 @@ export function AIInteraction() {
             <Button type="submit" disabled={loading || !message.trim()}>
               {loading ? (
                 <>
-                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  <HugeIcon
+                    icon={Loading03Icon}
+                    size={16}
+                    className="mr-2 animate-spin"
+                  />
                   Generating…
                 </>
               ) : (
                 <>
-                  <Send className="mr-2 size-4" />
+                  <HugeIcon icon={SentIcon} size={16} className="mr-2" />
                   Submit
                 </>
               )}
@@ -125,7 +136,7 @@ export function AIInteraction() {
               onClick={handleReset}
               disabled={loading && !response && !error}
             >
-              <RotateCcw className="mr-2 size-4" />
+              <HugeIcon icon={RefreshIcon} size={16} className="mr-2" />
               Reset
             </Button>
           </div>
@@ -139,14 +150,14 @@ export function AIInteraction() {
         )}
 
         {!error && !response && !loading && (
-          <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-            No response yet. Submit a message to see AI output here.
+          <div className="border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+            No response yet. Submit a question to see the assistant reply here.
           </div>
         )}
 
         {loading && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" />
+            <HugeIcon icon={Loading03Icon} size={16} className="animate-spin" />
             Waiting for the model…
           </div>
         )}
@@ -154,7 +165,7 @@ export function AIInteraction() {
         {response && (
           <div className="space-y-3">
             <div
-              className="rounded-lg bg-muted/50 p-4 text-sm whitespace-pre-wrap"
+              className="border border-border bg-muted/40 p-4 text-sm whitespace-pre-wrap"
               data-ph-mask
             >
               {response}
@@ -177,7 +188,7 @@ export function AIInteraction() {
                 disabled={feedbackSent}
                 onClick={() => sendFeedback(true)}
               >
-                <ThumbsUp className="size-4" />
+                <HugeIcon icon={ThumbsUpIcon} size={16} />
               </Button>
               <Button
                 type="button"
@@ -187,7 +198,7 @@ export function AIInteraction() {
                 disabled={feedbackSent}
                 onClick={() => sendFeedback(false)}
               >
-                <ThumbsDown className="size-4" />
+                <HugeIcon icon={ThumbsDownIcon} size={16} />
               </Button>
             </div>
           </div>

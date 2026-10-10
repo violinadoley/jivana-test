@@ -10,6 +10,28 @@ def load_prompt(version: str, name: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def render_generate_text_prompt(user_message: str, version: str = "v1") -> str:
+def _render(template: str, **replacements: str) -> str:
+    rendered = template
+    for key, value in replacements.items():
+        rendered = rendered.replace(f"{{{{{key}}}}}", value)
+    return rendered
+
+
+def render_generate_text_prompt(
+    user_message: str,
+    version: str = "v1",
+    *,
+    institutional_context: str = "",
+) -> str:
     template = load_prompt(version, "generate_text")
-    return template.replace("{{user_message}}", user_message)
+    context = institutional_context.strip() or "No matching institutional excerpts."
+    return _render(
+        template,
+        user_message=user_message,
+        institutional_context=context,
+    )
+
+
+def render_named_prompt(version: str, name: str, **replacements: str) -> str:
+    template = load_prompt(version, name)
+    return _render(template, **replacements)

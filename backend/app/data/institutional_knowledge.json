@@ -1,0 +1,32 @@
+[
+  {
+    "id": "medrec-policy",
+    "title": "Medication reconciliation policy",
+    "tags": ["medication", "reconciliation", "discharge", "pharmacy"],
+    "body": "All care transitions require comparing home, inpatient, and discharge medication lists. Discrepancies (omissions, dose changes, duplicates, new starts) must be resolved or explicitly acknowledged by a licensed clinician or pharmacist before the record is considered complete. JIVANA surfaces discrepancies; it never auto-approves orders."
+  },
+  {
+    "id": "human-in-loop",
+    "title": "Human-in-the-loop standard",
+    "tags": ["review", "ai", "governance", "workflow"],
+    "body": "AI-generated summaries and extractions are assistive only. Reviewers must verify source blocks on uploaded documents. Items in the review queue require a documented acknowledgment note. Weak or vertex-only evidence always routes to needs_review even when lists appear to match."
+  },
+  {
+    "id": "document-intake",
+    "title": "Document intake requirements",
+    "tags": ["upload", "document ai", "pdf", "ocr"],
+    "body": "Production intake uses Document AI for OCR and layout blocks, then Vertex Gemini for classification and structured medication extraction with source_block_id citations. Upload 1–3 files per reconciliation job: prior list, discharge summary, and current prescription when available."
+  },
+  {
+    "id": "fhir-export",
+    "title": "FHIR export after sign-off",
+    "tags": ["fhir", "healthcare api", "export", "compliance"],
+    "body": "After human review completes, reconciled outcomes export as a FHIR Bundle (DetectedIssue, MedicationStatement, Provenance) to the configured Cloud Healthcare API FHIR store for audit and downstream EHR integration."
+  },
+  {
+    "id": "privacy-demo",
+    "title": "Demo and privacy",
+    "tags": ["phi", "synthetic", "demo", "security"],
+    "body": "Public demos use synthetic documents only. Do not upload real patient identifiers to hackathon environments. Firebase Auth scopes jobs and activity to the signed-in user when auth is enabled."
+  }
+]

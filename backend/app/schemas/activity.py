@@ -3,7 +3,17 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-ActivityType = Literal["ai_generate", "file_upload"]
+ActivityType = Literal[
+    "ai_generate",
+    "file_upload",
+    "meddocs_reconciliation",
+    "meddocs_review",
+    "copilot_chat",
+    "meeting_intelligence",
+    "research",
+    "workflow_agent",
+    "enterprise_search",
+]
 
 
 class ActivityItem(BaseModel):

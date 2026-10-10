@@ -1,12 +1,15 @@
 "use client";
 
-import { FileUp, Loader2 } from "lucide-react";
+import { Loading03Icon, Upload04Icon } from "@hugeicons/core-free-icons";
 import { useCallback, useState } from "react";
+
+import { ACTIVITY_UPDATED_EVENT } from "@/lib/activity-events";
 
 import { PrototypeBanner } from "@/components/meddocs/PrototypeBanner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { HugeIcon } from "@/components/ui/huge-icon";
 import {
   Card,
   CardContent,
@@ -14,17 +17,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  createMedReconciliation,
-  submitMedReconciliationReview,
-} from "@/lib/api";
+import { createMedReconciliation } from "@/lib/api";
 import {
   bucketFileSize,
   fileExtension,
   trackAiWorkflowCompleted,
   trackAiWorkflowFailed,
   trackInputSubmitted,
-  trackRecommendationReviewed,
 } from "@/lib/posthog/events";
 import type { MedReconciliationJob } from "@/types/meddocs";
 
@@ -45,12 +44,16 @@ function statusVariant(
   return "outline";
 }
 
-export function MedReconciliationPanel() {
+type Props = {
+  initialJob?: MedReconciliationJob | null;
+  onJobChange?: () => void;
+};
+
+export function MedReconciliationPanel({ initialJob = null, onJobChange }: Props) {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [job, setJob] = useState<MedReconciliationJob | null>(null);
-  const [reviewNote, setReviewNote] = useState("");
+  const [job, setJob] = useState<MedReconciliationJob | null>(initialJob);
 
   const onFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const list = e.target.files ? Array.from(e.target.files) : [];
@@ -76,6 +79,8 @@ export function MedReconciliationPanel() {
     try {
       const result = await createMedReconciliation(files);
       setJob(result);
+      onJobChange?.();
+      window.dispatchEvent(new Event(ACTIVITY_UPDATED_EVENT));
       trackAiWorkflowCompleted(
         "meddocs_reconciliation",
         Math.round(performance.now() - started)
@@ -91,46 +96,22 @@ export function MedReconciliationPanel() {
     } finally {
       setLoading(false);
     }
-  }, [files]);
-
-  async function acknowledgeReview() {
-    if (!job || job.status !== "needs_review") {
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const updated = await submitMedReconciliationReview(job.job_id, {
-        note: reviewNote || "Acknowledged for demo.",
-        corrections_count: 0,
-      });
-      setJob({
-        ...job,
-        status: updated.status as MedReconciliationJob["status"],
-        human_review: updated.human_review,
-      });
-      trackRecommendationReviewed("meddocs_reconciliation");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Review submit failed.");
-    } finally {
-      setLoading(false);
-    }
-  }
+  }, [files, onJobChange]);
 
   return (
     <div className="space-y-4">
       <PrototypeBanner />
       <Card>
         <CardHeader>
-          <CardTitle>Medication reconciliation</CardTitle>
+          <CardTitle>Document intelligence · Medication reconciliation</CardTitle>
           <CardDescription>
-            Upload up to three synthetic PDFs or text files. Evidence is shown
-            from server-resolved source blocks only.
+            Upload up to three synthetic clinical-administrative files. JIVANA
+            extracts structured fields and routes discrepancies for human review.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8 text-sm text-muted-foreground hover:bg-muted/40">
-            <FileUp className="h-8 w-8" />
+          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 border border-dashed border-border p-8 text-sm text-muted-foreground">
+            <HugeIcon icon={Upload04Icon} size={32} />
             <span>Select 1–3 files ({ACCEPT})</span>
             <input
               type="file"
@@ -150,7 +131,11 @@ export function MedReconciliationPanel() {
           <Button onClick={() => void runReconciliation()} disabled={loading}>
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <HugeIcon
+                  icon={Loading03Icon}
+                  size={16}
+                  className="mr-2 animate-spin"
+                />
                 Processing…
               </>
             ) : (
@@ -228,19 +213,22 @@ export function MedReconciliationPanel() {
                 ))}
               </section>
             )}
+            {job.fhir_export_resource && (
+              <p className="text-xs text-muted-foreground">
+                FHIR export:{" "}
+                {job.fhir_export_resource === "failed"
+                  ? "Export to the health record was not completed. Contact your administrator."
+                  : job.fhir_export_resource}
+              </p>
+            )}
             {job.status === "needs_review" && (
-              <div className="space-y-2">
-                <textarea
-                  className="w-full rounded-md border bg-background p-2 text-sm"
-                  placeholder="Reviewer note (acknowledge only)"
-                  value={reviewNote}
-                  onChange={(e) => setReviewNote(e.target.value)}
-                  rows={2}
-                />
-                <Button variant="secondary" onClick={() => void acknowledgeReview()} disabled={loading}>
-                  Acknowledge review
-                </Button>
-              </div>
+              <Alert>
+                <AlertTitle>Per-item review required</AlertTitle>
+                <AlertDescription>
+                  Each medication difference must be reviewed individually. Open{" "}
+                  <strong>Medication reconciliation</strong> from the menu to continue this case.
+                </AlertDescription>
+              </Alert>
             )}
           </CardContent>
         </Card>

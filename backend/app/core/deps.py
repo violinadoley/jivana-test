@@ -4,6 +4,7 @@ from app.ai.base import AIService
 from app.ai.services.gemini_service import GeminiService
 from app.core.config import Settings, get_settings
 from app.core.exceptions import AuthenticationError
+from app.services.copilot.session_store import CopilotSessionStore
 from app.services.documents.document_ai_service import DocumentAIService
 from app.services.documents.document_store import DocumentStore
 from app.services.documents.intake_pipeline import MeddocsIntakePipeline
@@ -103,6 +104,14 @@ def get_document_store(
 ) -> DocumentStore:
     fs = firestore if settings.firebase_configured else None
     return DocumentStore(settings, firestore=fs)
+
+
+def get_copilot_store(
+    settings: Annotated[Settings, Depends(get_settings)],
+    firestore: Annotated[FirestoreService, Depends(get_firestore_service)],
+) -> CopilotSessionStore:
+    fs = firestore if settings.firebase_configured else None
+    return CopilotSessionStore(settings, firestore=fs)
 
 
 def get_meddocs_pipeline(

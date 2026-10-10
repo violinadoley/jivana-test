@@ -2,11 +2,12 @@ import asyncio
 import logging
 from typing import Annotated
 
+from app.ai.base import AIService
 from app.core.deps import get_activity_service, get_gemini_service, require_user
 from app.core.exceptions import AIGenerationError
 from app.schemas.ai import GenerateRequest, GenerateResponse
-from app.services.ai.base import AIService
 from app.services.firebase.activity_service import ActivityService
+from app.services.knowledge.institutional_knowledge import InstitutionalKnowledgeService
 from fastapi import APIRouter, Depends
 
 logger = logging.getLogger(__name__)
@@ -23,9 +24,15 @@ async def generate_text(
     user: Annotated[dict | None, Depends(require_user)],
     activity: Annotated[ActivityService, Depends(get_activity_service)],
 ) -> GenerateResponse:
+    knowledge = InstitutionalKnowledgeService()
+    context = knowledge.format_context(body.message)
     try:
         text = await asyncio.wait_for(
-            asyncio.to_thread(ai.generate_text, body.message),
+            asyncio.to_thread(
+                ai.generate_text,
+                body.message,
+                institutional_context=context,
+            ),
             timeout=AI_GENERATE_TIMEOUT_SECONDS,
         )
     except TimeoutError as exc:

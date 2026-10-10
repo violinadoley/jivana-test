@@ -8,8 +8,11 @@ class AIService(ABC):
     """Abstraction for Gemini and future model providers."""
 
     @abstractmethod
-    def generate_text(self, prompt: str) -> str:
+    def generate_text(self, prompt: str, *, institutional_context: str = "") -> str:
         """Generate plain text from a user prompt."""
+
+    def generate_from_template(self, version: str, name: str, **replacements: str) -> str:
+        raise NotImplementedError("Template generation not implemented for this provider.")
 
     def generate_structured_output(self, prompt: str, schema: type[T]) -> T:
         raise NotImplementedError("Structured output not implemented yet.")
