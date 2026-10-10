@@ -3,7 +3,7 @@ import uuid
 from typing import Any
 
 from app.core.config import Settings
-from app.schemas.meddocs import DiscrepancyType, MedReconciliationJob
+from app.schemas.meddocs import CaseStatus, DiscrepancyType, MedReconciliationJob
 
 logger = logging.getLogger(__name__)
 
@@ -73,8 +73,18 @@ def build_reconciliation_bundle(job: MedReconciliationJob) -> dict[str, Any]:
             )
 
     review = job.human_review
-    review_note = review.note if review else "Pending review"
-    reviewer = review.reviewer_uid if review else "jivana-system"
+    if review:
+        review_note = review.note or "Human review recorded"
+        reviewer = review.reviewer_uid or "jivana-reviewer"
+        reviewed_at = review.reviewed_at
+    elif job.case_status == CaseStatus.REVIEW_DOCUMENTED:
+        review_note = (job.attestation.note if job.attestation else None) or "Per-item review documented"
+        reviewer = job.finalized_by_uid or job.finalized_by_display or "jivana-reviewer"
+        reviewed_at = job.finalized_at
+    else:
+        review_note = "Pending review"
+        reviewer = "jivana-system"
+        reviewed_at = None
     entries.append(
         {
             "fullUrl": f"urn:uuid:prov-{job.job_id}",
@@ -100,7 +110,7 @@ def build_reconciliation_bundle(job: MedReconciliationJob) -> dict[str, Any]:
                 "signature": [
                     {
                         "type": [{"text": "human acknowledgment"}],
-                        "when": review.reviewed_at if review else None,
+                        "when": reviewed_at,
                         "who": {"display": review_note},
                     }
                 ],
@@ -129,8 +139,8 @@ class HealthcareFhirExportService:
         )
 
     def export_reconciliation(self, job: MedReconciliationJob) -> str | None:
-        if job.human_review is None:
-            logger.info("Skipping FHIR export until human review for job_id=%s", job.job_id)
+        if job.case_status != CaseStatus.REVIEW_DOCUMENTED and job.human_review is None:
+            logger.info("Skipping FHIR export until review documented for job_id=%s", job.job_id)
             return None
         if not self.configured:
             logger.info(
