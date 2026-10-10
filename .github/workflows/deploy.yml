@@ -88,6 +88,10 @@ jobs:
           if [ -z "$DOCUMENT_AI_LOCATION" ]; then
             DOCUMENT_AI_LOCATION="us"
           fi
+          VERTEX_LOCATION="${{ vars.VERTEX_LOCATION }}"
+          if [ -z "$VERTEX_LOCATION" ]; then
+            VERTEX_LOCATION="us-central1"
+          fi
           ENV_FILE="$(mktemp)"
           {
             echo "ENVIRONMENT: cloud"
@@ -100,6 +104,7 @@ jobs:
             echo "FIREBASE_STORAGE_BUCKET: ${FIREBASE_STORAGE_BUCKET}"
             echo "GCP_PROJECT_ID: ${FIREBASE_PROJECT_ID}"
             echo "GCP_LOCATION: ${{ vars.GCP_REGION }}"
+            echo "VERTEX_LOCATION: \"${VERTEX_LOCATION}\""
             echo "DOCUMENT_AI_PROCESSOR_ID: \"${DOCUMENT_AI_PROCESSOR_ID}\""
             echo "DOCUMENT_AI_LOCATION: \"${DOCUMENT_AI_LOCATION}\""
             echo "VERTEX_GEMINI_MODEL: gemini-2.5-flash"

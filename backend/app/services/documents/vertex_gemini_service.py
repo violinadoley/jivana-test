@@ -53,7 +53,7 @@ class _LiveVertexClient:
         client = genai.Client(
             vertexai=True,
             project=project,
-            location=self._settings.gcp_location,
+            location=self._settings.effective_vertex_location,
         )
         catalog_json = [
             {

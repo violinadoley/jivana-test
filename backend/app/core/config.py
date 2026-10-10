@@ -34,6 +34,7 @@ class Settings(BaseSettings):
 
     gcp_project_id: str | None = Field(default=None, alias="GCP_PROJECT_ID")
     gcp_location: str = Field(default="us-central1", alias="GCP_LOCATION")
+    vertex_location: str | None = Field(default=None, alias="VERTEX_LOCATION")
     document_ai_processor_id: str | None = Field(default=None, alias="DOCUMENT_AI_PROCESSOR_ID")
     document_ai_location: str = Field(default="us", alias="DOCUMENT_AI_LOCATION")
     vertex_model: str = Field(default="gemini-2.5-flash", alias="VERTEX_GEMINI_MODEL")
@@ -45,6 +46,12 @@ class Settings(BaseSettings):
     @property
     def document_ai_configured(self) -> bool:
         return bool(self.document_ai_processor_id and self.document_ai_processor_id.strip())
+
+    @property
+    def effective_vertex_location(self) -> str:
+        if self.vertex_location and self.vertex_location.strip():
+            return self.vertex_location.strip()
+        return self.gcp_location
 
     @property
     def cors_origin_list(self) -> list[str]:

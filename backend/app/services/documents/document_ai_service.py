@@ -8,6 +8,16 @@ from app.schemas.meddocs import BoundingBox, EvidenceStatus, SourceBlock
 logger = logging.getLogger(__name__)
 
 
+def _documentai_client(location: str):
+    from google.api_core.client_options import ClientOptions
+    from google.cloud import documentai
+
+    endpoint = f"{location}-documentai.googleapis.com"
+    return documentai.DocumentProcessorServiceClient(
+        client_options=ClientOptions(api_endpoint=endpoint)
+    )
+
+
 class DocumentAIClient(Protocol):
     def verify_processor(self) -> None: ...
 
@@ -56,9 +66,7 @@ class _LiveDocumentAIClient:
         if not processor or not project:
             raise DocumentAIConfigurationError("Document AI processor or project id missing.")
         try:
-            from google.cloud import documentai
-
-            client = documentai.DocumentProcessorServiceClient()
+            client = _documentai_client(location)
             name = (
                 processor
                 if processor.startswith("projects/")
@@ -76,17 +84,17 @@ class _LiveDocumentAIClient:
     def process_to_blocks(
         self, document_id: str, content: bytes, mime_type: str
     ) -> list[SourceBlock]:
-        from google.cloud import documentai
-
-        client = documentai.DocumentProcessorServiceClient()
         processor = self._settings.document_ai_processor_id or ""
         project = self._settings.effective_gcp_project_id or ""
         location = self._settings.document_ai_location
+        client = _documentai_client(location)
         name = (
             processor
             if processor.startswith("projects/")
             else client.processor_path(project, location, processor)
         )
+        from google.cloud import documentai
+
         raw = documentai.RawDocument(content=content, mime_type=mime_type)
         request = documentai.ProcessRequest(name=name, raw_document=raw)
         result = client.process_document(request=request)

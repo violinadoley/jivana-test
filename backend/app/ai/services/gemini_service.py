@@ -22,8 +22,12 @@ class GeminiService(AIService):
         return AIExecutionContext.from_settings(self._settings)
 
     def _uses_vertex_adc(self) -> bool:
-        key = (self._settings.gemini_api_key or "").strip()
-        return not key and bool(self._settings.effective_gcp_project_id)
+        project = self._settings.effective_gcp_project_id
+        if not project:
+            return False
+        if self._settings.environment.lower() in ("cloud", "production"):
+            return True
+        return not (self._settings.gemini_api_key or "").strip()
 
     @property
     def client(self) -> genai.Client:
@@ -37,7 +41,7 @@ class GeminiService(AIService):
                 self._client = genai.Client(
                     vertexai=True,
                     project=project,
-                    location=self._settings.gcp_location,
+                    location=self._settings.effective_vertex_location,
                 )
             elif self._settings.gemini_api_key:
                 self._client = genai.Client(api_key=self._settings.gemini_api_key)
