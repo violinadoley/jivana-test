@@ -193,8 +193,7 @@ class MeddocsIntakePipeline:
         self, document_id: str, part: UploadedPart, job: MedReconciliationJob
     ) -> list[SourceBlock]:
         use_document_ai = (
-            self._document_ai.is_configured
-            and part.content_type in _DOCUMENT_AI_CONTENT_TYPES
+            self._document_ai.is_configured and part.content_type in _DOCUMENT_AI_CONTENT_TYPES
         )
         if use_document_ai:
             try:
