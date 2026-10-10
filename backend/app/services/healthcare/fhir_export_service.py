@@ -10,8 +10,19 @@ logger = logging.getLogger(__name__)
 
 def build_reconciliation_bundle(job: MedReconciliationJob) -> dict[str, Any]:
     """FHIR R4 Bundle for audit / interop (synthetic-friendly)."""
-    patient_ref = f"Patient/jivana-{job.job_id[:8]}"
-    entries: list[dict[str, Any]] = []
+    patient_urn = f"urn:uuid:patient-{job.job_id[:8]}"
+    patient_ref = patient_urn
+    entries: list[dict[str, Any]] = [
+        {
+            "fullUrl": patient_urn,
+            "resource": {
+                "resourceType": "Patient",
+                "identifier": [{"system": "urn:jivana:mrn", "value": f"SYN-{job.job_id[:8]}"}],
+                "name": [{"text": "Synthetic discharge patient"}],
+            },
+            "request": {"method": "POST", "url": "Patient"},
+        }
+    ]
 
     for index, disc in enumerate(job.discrepancies):
         code = disc.discrepancy_type.value
@@ -110,7 +121,13 @@ def build_reconciliation_bundle(job: MedReconciliationJob) -> dict[str, Any]:
                 ],
                 "signature": [
                     {
-                        "type": [{"text": "human acknowledgment"}],
+                        "type": [
+                            {
+                                "system": "http://hl7.org/fhir/ValueSet-signature-type",
+                                "code": "verification",
+                                "display": "Verification",
+                            }
+                        ],
                         "when": reviewed_at,
                         "who": {"display": review_note},
                     }

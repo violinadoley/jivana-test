@@ -30,5 +30,6 @@ def test_fhir_bundle_contains_detected_issue() -> None:
     bundle = build_reconciliation_bundle(job)
     assert bundle["resourceType"] == "Bundle"
     types = {entry["resource"]["resourceType"] for entry in bundle["entry"]}
+    assert "Patient" in types
     assert "DetectedIssue" in types
     assert "Provenance" in types
