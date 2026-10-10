@@ -78,7 +78,8 @@ def build_reconciliation_bundle(job: MedReconciliationJob) -> dict[str, Any]:
         reviewer = review.reviewer_uid or "jivana-reviewer"
         reviewed_at = review.reviewed_at
     elif job.case_status == CaseStatus.REVIEW_DOCUMENTED:
-        review_note = (job.attestation.note if job.attestation else None) or "Per-item review documented"
+        att_note = job.attestation.note if job.attestation else None
+        review_note = att_note or "Per-item review documented"
         reviewer = job.finalized_by_uid or job.finalized_by_display or "jivana-reviewer"
         reviewed_at = job.finalized_at
     else:
