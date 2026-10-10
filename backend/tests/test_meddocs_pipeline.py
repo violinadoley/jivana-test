@@ -27,10 +27,16 @@ def _pipeline(
     return MeddocsIntakePipeline(settings, storage, store, dai, vtx)
 
 
-def _bundle() -> list[UploadedPart]:
+def _bundle(*, pdf_mime: bool = False) -> list[UploadedPart]:
     prior = b"MRN 12345\nPrior record\nLisinopril 10 mg daily"
     discharge = b"MRN 12345\nDischarge summary\nLisinopril 10 mg daily"
     rx = b"MRN 12345\nCurrent prescription\nLisinopril 10 mg daily"
+    if pdf_mime:
+        return [
+            UploadedPart("prior_meds.pdf", "application/pdf", prior),
+            UploadedPart("discharge_summary.pdf", "application/pdf", discharge),
+            UploadedPart("current_rx.pdf", "application/pdf", rx),
+        ]
     return [
         UploadedPart("prior_meds.txt", "text/plain", prior),
         UploadedPart("discharge_summary.txt", "text/plain", discharge),
@@ -42,12 +48,34 @@ def test_completed_requires_verified_evidence_on_compared_fields() -> None:
     docai = FakeDocumentAIClient()
     vertex = FakeVertexMeddocsClient()
     job = _pipeline(docai=docai, vertex=vertex, processor_id="proc").run_reconciliation(
-        _bundle(), owner_uid=None
+        _bundle(pdf_mime=True), owner_uid=None
     )
     assert job.status == JobStatus.NEEDS_REVIEW
     assert job.case_status.value == "awaiting_review"
     assert job.reconciliation_used_weak_evidence is False
     assert job.discrepancies == []
+
+
+def test_plain_text_skips_document_ai_when_processor_configured() -> None:
+    docai = FakeDocumentAIClient()
+    vertex = FakeVertexMeddocsClient()
+    settings = Settings(
+        DOCUMENT_AI_PROCESSOR_ID="proc",
+        GCP_PROJECT_ID="test-gcp",
+        ENVIRONMENT="cloud",
+    )
+    storage = StorageService(settings)
+    store = DocumentStore(settings, firestore=None)
+    pipeline = MeddocsIntakePipeline(
+        settings,
+        storage,
+        store,
+        DocumentAIService(settings, client=docai),
+        VertexGeminiMeddocsService(settings, client=vertex),
+    )
+    job = pipeline.run_reconciliation(_bundle(), owner_uid=None)
+    assert docai.process_called is False
+    assert job.status == JobStatus.NEEDS_REVIEW
 
 
 def test_vertex_only_evidence_forces_needs_review_despite_matching_meds() -> None:
@@ -78,7 +106,12 @@ def test_no_auto_complete_when_any_discrepancy() -> None:
         ),
     ]
     job = _pipeline(docai=docai, vertex=vertex, processor_id="proc").run_reconciliation(
-        files, owner_uid=None
+        [
+            UploadedPart("prior_meds.pdf", "application/pdf", files[0].data),
+            UploadedPart("discharge_summary.pdf", "application/pdf", files[1].data),
+            UploadedPart("current_rx.pdf", "application/pdf", files[2].data),
+        ],
+        owner_uid=None,
     )
     assert job.discrepancies
     assert job.status == JobStatus.NEEDS_REVIEW

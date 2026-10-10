@@ -34,6 +34,15 @@ from app.services.storage.storage_service import ALLOWED_CONTENT_TYPES, StorageS
 
 logger = logging.getLogger(__name__)
 
+# Document AI processors target PDF/images; plain text uses direct extraction + Vertex.
+_DOCUMENT_AI_CONTENT_TYPES = frozenset(
+    {
+        "application/pdf",
+        "image/png",
+        "image/jpeg",
+    }
+)
+
 
 class UploadedPart:
     def __init__(self, filename: str, content_type: str, data: bytes) -> None:
@@ -183,7 +192,11 @@ class MeddocsIntakePipeline:
     def _build_blocks(
         self, document_id: str, part: UploadedPart, job: MedReconciliationJob
     ) -> list[SourceBlock]:
-        if self._document_ai.is_configured:
+        use_document_ai = (
+            self._document_ai.is_configured
+            and part.content_type in _DOCUMENT_AI_CONTENT_TYPES
+        )
+        if use_document_ai:
             try:
                 blocks = self._document_ai.process_to_blocks(
                     document_id, part.data, part.content_type
