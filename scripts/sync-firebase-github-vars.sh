@@ -4,7 +4,7 @@
 set -euo pipefail
 
 PROJECT_ID="${1:-}"
-REPO="${GITHUB_REPO:-violinadoley/project}"
+REPO="${GITHUB_REPO:-violinadoley/JIVANA}"
 
 if [ -z "$PROJECT_ID" ]; then
   echo "Usage: $0 YOUR_GCP_PROJECT_ID"

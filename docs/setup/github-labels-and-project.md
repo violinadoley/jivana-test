@@ -2,7 +2,7 @@
 
 ## Labels (AUTOMATED)
 
-These labels exist on **[violinadoley/project](https://github.com/violinadoley/project/labels)**:
+These labels exist on **[violinadoley/JIVANA](https://github.com/violinadoley/JIVANA/labels)**:
 
 | Label | Use |
 |-------|-----|

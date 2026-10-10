@@ -1,6 +1,6 @@
 # GitHub branch protection (`main` + `develop`)
 
-**Status: AUTOMATED** for [violinadoley/project](https://github.com/violinadoley/project) (public repo).
+**Status: AUTOMATED** for [violinadoley/JIVANA](https://github.com/violinadoley/JIVANA) (public repo).
 
 Both **`main`** and **`develop`** require:
 
@@ -36,7 +36,7 @@ Optional: require the workflow-level check **CI** if your plan shows a single ag
 
 Repeat for **`main`** and **`develop`**.
 
-1. Open **https://github.com/violinadoley/project/settings/branches**
+1. Open **https://github.com/violinadoley/JIVANA/settings/branches**
 2. **Add branch protection rule** (or **Add rule**)
 3. **Branch name pattern:** `main` (then repeat for `develop`)
 4. Enable:

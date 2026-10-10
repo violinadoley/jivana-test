@@ -1,5 +1,7 @@
 # Migrate to a new GitHub repository (clean Contributors)
 
+**Canonical repo:** [violinadoley/JIVANA](https://github.com/violinadoley/JIVANA) (migrated from `violinadoley/project` with a single clean commit; Contributors show only your account).
+
 Use this when the old repo has **orphan commits** (e.g. `cursoragent`) that still appear on GitHub’s **Contributors** sidebar. A new repo with **one initial commit under your account** gives a clean public graph. **GCP/Firebase/Cloud Run can stay on the same project** — only GitHub remote and Actions config move.
 
 ## What you keep vs redo
@@ -60,6 +62,10 @@ Copy to the **new** repo:
 - **Secrets:** same as before (e.g. `GEMINI_API_KEY` if stored as secret, WIF provider if used).
 
 See [security-defaults.md](../security-defaults.md) and [github-google-oidc.md](./github-google-oidc.md).
+
+### 4b. Point GitHub OIDC / WIF at the new repo
+
+If deploy used Workload Identity Federation, the pool provider **attribute condition** and the deploy service account **workloadIdentityUser** binding must use the **new** `owner/repo` slug (e.g. `violinadoley/JIVANA`), not the old repo. See [github-google-oidc.md](./github-google-oidc.md) steps 5–6.
 
 ## 5. Trigger deploy
 

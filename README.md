@@ -1,6 +1,6 @@
 # PROJECT_NAME
 
-**Starter release:** [v1.0.0](https://github.com/violinadoley/project/releases/tag/v1.0.0) — platform complete; customize below for your competition entry.
+**Starter release:** [v1.0.0](https://github.com/violinadoley/JIVANA/releases/tag/v1.0.0) — platform complete; customize below for your competition entry.
 
 | | |
 |---|---|

@@ -2,7 +2,7 @@
 # Set PostHog GitHub Actions variables for frontend deploy (see docs/setup/posthog.md).
 set -euo pipefail
 
-REPO="${GITHUB_REPO:-violinadoley/project}"
+REPO="${GITHUB_REPO:-violinadoley/JIVANA}"
 KEY="${NEXT_PUBLIC_POSTHOG_KEY:-${1:-}}"
 HOST="${NEXT_PUBLIC_POSTHOG_HOST:-https://us.i.posthog.com}"
 

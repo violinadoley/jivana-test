@@ -36,5 +36,5 @@ First release of the **AI hackathon starter** — Google-native platform (Next.j
 - Setup: OIDC, Firebase Hosting/backend, branch protection, PostHog
 - [Starter template complete](docs/starter-template.md) — customize prompts and UI from here
 
-[Unreleased]: https://github.com/violinadoley/project/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/violinadoley/project/releases/tag/v1.0.0
+[Unreleased]: https://github.com/violinadoley/JIVANA/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/violinadoley/JIVANA/releases/tag/v1.0.0
