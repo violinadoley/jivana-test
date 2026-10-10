@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useCallback, useEffect, useState } from "react";
 
 import {
@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { HugeIcon } from "@/components/ui/huge-icon";
 import { ACTIVITY_UPDATED_EVENT } from "@/lib/activity-events";
 import { listActivity } from "@/lib/api";
 import type { ActivityItem } from "@/types/api";
@@ -26,7 +27,28 @@ function formatWhen(iso: string | null | undefined): string {
 }
 
 function typeLabel(type: ActivityItem["type"]): string {
-  return type === "ai_generate" ? "AI" : "Upload";
+  switch (type) {
+    case "ai_generate":
+      return "AI";
+    case "file_upload":
+      return "Upload";
+    case "meddocs_reconciliation":
+      return "Med rec";
+    case "meddocs_review":
+      return "Review";
+    case "copilot_chat":
+      return "Copilot";
+    case "meeting_intelligence":
+      return "Meeting";
+    case "research":
+      return "Research";
+    case "workflow_agent":
+      return "Agent";
+    case "enterprise_search":
+      return "Search";
+    default:
+      return "Activity";
+  }
 }
 
 export function RecentActivity() {
@@ -98,7 +120,7 @@ export function RecentActivity() {
       <CardContent>
         {loading && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" />
+            <HugeIcon icon={Loading03Icon} size={16} className="animate-spin" />
             Loading…
           </div>
         )}
@@ -108,9 +130,20 @@ export function RecentActivity() {
         )}
 
         {!loading && !error && items.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            No activity yet. Send an AI message or upload a file on the dashboard.
-          </p>
+          <ul className="space-y-2 text-sm text-muted-foreground">
+            <li className="rounded-lg border border-dashed border-border px-3 py-2">
+              <span className="font-medium text-foreground">Copilot</span> — ask a policy or
+              workflow question in the Copilot tab.
+            </li>
+            <li className="rounded-lg border border-dashed border-border px-3 py-2">
+              <span className="font-medium text-foreground">Documents</span> — run med rec or upload
+              files; events appear here when Firestore is configured.
+            </li>
+            <li className="rounded-lg border border-dashed border-border px-3 py-2">
+              <span className="font-medium text-foreground">Search &amp; research</span> — enterprise
+              search and synthesis log activity after each run.
+            </li>
+          </ul>
         )}
 
         {!loading && items.length > 0 && (

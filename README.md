@@ -1,6 +1,16 @@
-# PROJECT_NAME
+# JIVANA
 
-**Starter release:** [v1.0.0](https://github.com/violinadoley/JIVANA/releases/tag/v1.0.0) — platform complete; customize below for your competition entry.
+**AI Builder Cup 2026 · Future of Work & Enterprise Productivity · Healthcare**
+
+JIVANA is an AI-powered workspace that transforms how healthcare teams **access knowledge**, **collaborate**, **make decisions**, and **complete everyday work**—with Document AI med reconciliation, enterprise search, copilot, meeting intelligence, research, and agentic workflows on **Google Cloud**.
+
+| Doc | Purpose |
+|-----|---------|
+| [Design & how it works](docs/product/jivana-design-and-operations.md) | Architecture, flows, demo script, GCP mapping |
+| [Roadmap / judge demo](docs/product/jivana-roadmap.md) | Competition alignment checklist |
+| [MedDocs setup](docs/setup/document-ai-vertex-meddocs.md) | Document AI + Vertex med rec |
+
+**Starter release:** [v1.0.0](https://github.com/violinadoley/JIVANA/releases/tag/v1.0.0).
 
 | | |
 |---|---|
@@ -28,23 +38,30 @@ Local API docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
 ## Problem
 
-Medication lists often differ across discharge paperwork, prior records, and current prescriptions. Teams need auditable evidence for each extracted field before a human reconciler can safely review changes — without auto-approving regimens from a hackathon demo.
+Healthcare teams lose productivity when knowledge is scattered across policies, meetings, and documents—and when medication lists disagree at care transitions without auditable review.
 
-## Solution
+## Solution (workspace modules)
 
-**MedDocs Module 1** (synthetic documents only): upload up to three files → optional Document AI OCR (or Vertex-only path when the processor is unset) → server-owned `SourceBlock` catalogs → Vertex Gemini extraction citing block IDs only → deterministic medication comparison → **`needs_review`** for every discrepancy (including documented changes) and whenever reconciliation relied on `vertex_only`/`low` evidence. Generic Gemini chat remains on `POST /api/v1/ai/generate`.
+| Module | API |
+|--------|-----|
+| Copilot | `POST /api/v1/copilot/chat` |
+| Intelligent search | `GET /api/v1/search` |
+| **Discharge med rec workbench (MVP)** | `POST /api/v1/meddocs/cases`, `…/reconcile`, `PATCH …/items/{item_id}`, `…/finalize-review` |
+| Document intelligence (legacy one-shot) | `POST /api/v1/meddocs/reconciliation` |
+| Meeting intelligence | `POST /api/v1/meetings/intelligence` |
+| Research | `POST /api/v1/research/synthesize` |
+| Workflow agent | `POST /api/v1/workflows/agent-run` |
+| Platform status | `GET /api/v1/platform/capabilities` |
 
-Setup: [docs/setup/document-ai-vertex-meddocs.md](docs/setup/document-ai-vertex-meddocs.md).
+Open **`/dashboard`**. For the hackathon MVP, set **`NEXT_PUBLIC_MVP_WORKBENCH=true`** in `frontend/.env.local` (see `.env.local.example`) for the case-centric discharge workbench. Enterprise tabs remain in code behind that flag. Setup: [document-ai-vertex-meddocs.md](docs/setup/document-ai-vertex-meddocs.md), [vertex-ai-search-bigquery.md](docs/setup/vertex-ai-search-bigquery.md).
 
 ## Key Features
 
-- MedDocs medication reconciliation UI (synthetic PDFs/text, review queue, evidence snippets)
-- Landing page and generic AI dashboard (text + file upload)
-- Gemini integration via official `google-genai` SDK (model from env)
-- Firebase Auth (Google), Firestore activity feed, and GCS uploads via the API
-- Optional auth (`AUTH_REQUIRED=false` for local dev)
-- Structured API errors and JSON logging for Cloud Run
-- Backend pytest suite and GitHub Actions CI
+- Discharge medication reconciliation workbench (per-item review, finalize attestation, HTML summary)
+- Optional eight-tab enterprise workspace (hidden when `NEXT_PUBLIC_MVP_WORKBENCH=true`)
+- Gemini on Vertex AI (Cloud Run) + optional Vertex AI Search, Document AI, Healthcare FHIR, BigQuery events
+- Firebase Auth, Firestore activity/sessions, GCS uploads
+- pytest + Playwright smoke + GitHub Actions CI/deploy
 
 ## Tech Stack
 
@@ -99,7 +116,7 @@ cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --reload-dir app --port 8000
 ```
 
 Health check: [http://localhost:8000/health](http://localhost:8000/health)
@@ -139,6 +156,7 @@ Setup: [docs/setup/github-google-oidc.md](docs/setup/github-google-oidc.md) · [
 - Overview: [docs/deployment.md](docs/deployment.md)
 - Cloud Run: [docs/deployment/cloud-run.md](docs/deployment/cloud-run.md)
 - Rollback: [docs/runbooks/rollback.md](docs/runbooks/rollback.md)
+- Post-deploy checks: [docs/setup/verify-integrations.md](docs/setup/verify-integrations.md) (`./scripts/smoke-api.sh`, `./scripts/verify-platform.sh`)
 
 ## Google Cloud Setup
 
@@ -166,7 +184,7 @@ backend/tests/     Pytest suite
 docs/              Architecture, ADRs, runbooks, deployment, security
 ai-evals/          AI regression framework (datasets + evaluators)
 infra/             Infra conventions (no Terraform by default)
-scripts/           dev.sh, deploy.sh, smoke-api.sh
+scripts/           dev.sh, deploy.sh, smoke-api.sh, verify-platform.sh
 .github/workflows/ CI + Cloud Run deploy
 ```
 

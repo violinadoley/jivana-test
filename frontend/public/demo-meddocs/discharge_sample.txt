@@ -1,0 +1,6 @@
+SYNTHETIC ONLY — not real PHI
+MRN: SYN-1001
+Discharge summary
+Documented change: increase lisinopril to 20 mg daily at discharge.
+Medications:
+- Lisinopril 20 mg PO daily

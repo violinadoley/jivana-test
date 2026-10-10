@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "components/animate-ui/**",
+    "hooks/use-is-in-view.tsx",
   ]),
 ]);
 

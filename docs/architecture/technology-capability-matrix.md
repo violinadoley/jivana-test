@@ -75,8 +75,8 @@ Reference for **AI Builder Cup 2026** technical decisions on top of this starter
 |------------|---------|----------------|---------------|--------------|-------|------------|------|------------|------------|
 | **FastAPI route orchestration** | Deterministic workflows | **Verified** | All | Full agent framework | Python code | Low | — | Most hackathon flows | — |
 | **Tool calling (Gemini function calling)** | Model-driven tools | **Planned** | Productivity | ADK | Extend AI layer | Medium | Tokens | Few well-defined tools | Open-ended agent |
-| **Google ADK** | Agent development kit | **Absent** | Future of work | Custom agents | New dep + GCP | High | GCP | Multi-tool agents | Single LLM call |
-| **Vertex AI Agent Engine** | Hosted agents | **Absent** | Productivity | ADK + Run | GCP setup | High | GCP | Managed agent runtime | Simple pipeline |
+| **Google ADK** | Agent development kit | **Partial** — in-process on Cloud Run; `AGENT_BACKEND` | Future of work | Custom agents | `google-adk` dep | Medium | GCP | Copilot/research/meetings/workflows | Discharge med rec |
+| **Vertex AI Agent Engine** | Hosted agents | **Planned** | Productivity | ADK in-process | GCP Agent Engine | High | GCP | Managed agent runtime | Current ADK-on-Run path |
 
 ---
 

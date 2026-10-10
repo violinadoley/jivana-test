@@ -44,7 +44,8 @@ def test_completed_requires_verified_evidence_on_compared_fields() -> None:
     job = _pipeline(docai=docai, vertex=vertex, processor_id="proc").run_reconciliation(
         _bundle(), owner_uid=None
     )
-    assert job.status == JobStatus.COMPLETED
+    assert job.status == JobStatus.NEEDS_REVIEW
+    assert job.case_status.value == "awaiting_review"
     assert job.reconciliation_used_weak_evidence is False
     assert job.discrepancies == []
 

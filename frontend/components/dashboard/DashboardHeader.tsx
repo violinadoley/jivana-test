@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { LoginButton } from "@/components/auth/LoginButton";
+import { JivanaLogo } from "@/components/brand/jivana-logo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -19,41 +20,33 @@ export function DashboardHeader() {
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? "GU";
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="font-semibold tracking-tight">
-            PROJECT_NAME
+    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <div className="flex items-center gap-10">
+          <Link href="/">
+            <JivanaLogo size="sm" />
           </Link>
-          <nav className="hidden sm:flex items-center gap-4 text-sm text-muted-foreground">
-            <Link href="/dashboard" className="text-foreground font-medium">
-              Dashboard
+          <nav className="hidden items-center gap-6 text-sm text-muted-foreground sm:flex">
+            <Link href="/dashboard" className="font-medium text-foreground">
+              Workspace
             </Link>
-            <Link
-              href="/dashboard#recent-activity"
-              className="hover:text-foreground"
-            >
-              Activity
-            </Link>
+            <Link href="/dashboard#meetings">Meetings</Link>
+            <Link href="/">About JIVANA</Link>
           </nav>
         </div>
         <div className="flex items-center gap-2">
           <LoginButton />
           <DropdownMenu>
-            <DropdownMenuTrigger
-              className="relative size-9 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
+            <DropdownMenuTrigger className="relative size-9 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <Avatar className="size-9">
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>
-                {user?.email ?? "Guest user"}
-              </DropdownMenuLabel>
+              <DropdownMenuLabel>{user?.email ?? "Guest user"}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem disabled>Profile (competition build)</DropdownMenuItem>
-              <DropdownMenuItem disabled>Preferences (competition build)</DropdownMenuItem>
+              <DropdownMenuItem disabled>Profile</DropdownMenuItem>
+              <DropdownMenuItem disabled>Preferences</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

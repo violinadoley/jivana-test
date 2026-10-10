@@ -92,6 +92,26 @@ jobs:
           if [ -z "$VERTEX_LOCATION" ]; then
             VERTEX_LOCATION="us-central1"
           fi
+          VERTEX_SEARCH_DATA_STORE_ID="${{ vars.VERTEX_SEARCH_DATA_STORE_ID }}"
+          VERTEX_SEARCH_LOCATION="${{ vars.VERTEX_SEARCH_LOCATION }}"
+          if [ -z "$VERTEX_SEARCH_LOCATION" ]; then
+            VERTEX_SEARCH_LOCATION="global"
+          fi
+          VERTEX_SEARCH_SERVING_CONFIG="${{ vars.VERTEX_SEARCH_SERVING_CONFIG }}"
+          if [ -z "$VERTEX_SEARCH_SERVING_CONFIG" ]; then
+            VERTEX_SEARCH_SERVING_CONFIG="default_search"
+          fi
+          BIGQUERY_DATASET_ID="${{ vars.BIGQUERY_DATASET_ID }}"
+          BIGQUERY_PRODUCTIVITY_TABLE="${{ vars.BIGQUERY_PRODUCTIVITY_TABLE }}"
+          if [ -z "$BIGQUERY_PRODUCTIVITY_TABLE" ]; then
+            BIGQUERY_PRODUCTIVITY_TABLE="productivity_events"
+          fi
+          HEALTHCARE_DATASET_ID="${{ vars.HEALTHCARE_DATASET_ID }}"
+          HEALTHCARE_FHIR_STORE_ID="${{ vars.HEALTHCARE_FHIR_STORE_ID }}"
+          HEALTHCARE_LOCATION="${{ vars.HEALTHCARE_LOCATION }}"
+          if [ -z "$HEALTHCARE_LOCATION" ]; then
+            HEALTHCARE_LOCATION="us-central1"
+          fi
           ENV_FILE="$(mktemp)"
           {
             echo "ENVIRONMENT: cloud"
@@ -108,6 +128,14 @@ jobs:
             echo "DOCUMENT_AI_PROCESSOR_ID: \"${DOCUMENT_AI_PROCESSOR_ID}\""
             echo "DOCUMENT_AI_LOCATION: \"${DOCUMENT_AI_LOCATION}\""
             echo "VERTEX_GEMINI_MODEL: gemini-2.5-flash"
+            echo "VERTEX_SEARCH_DATA_STORE_ID: \"${VERTEX_SEARCH_DATA_STORE_ID}\""
+            echo "VERTEX_SEARCH_LOCATION: \"${VERTEX_SEARCH_LOCATION}\""
+            echo "VERTEX_SEARCH_SERVING_CONFIG: \"${VERTEX_SEARCH_SERVING_CONFIG}\""
+            echo "BIGQUERY_DATASET_ID: \"${BIGQUERY_DATASET_ID}\""
+            echo "BIGQUERY_PRODUCTIVITY_TABLE: \"${BIGQUERY_PRODUCTIVITY_TABLE}\""
+            echo "HEALTHCARE_DATASET_ID: \"${HEALTHCARE_DATASET_ID}\""
+            echo "HEALTHCARE_FHIR_STORE_ID: \"${HEALTHCARE_FHIR_STORE_ID}\""
+            echo "HEALTHCARE_LOCATION: \"${HEALTHCARE_LOCATION}\""
           } > "$ENV_FILE"
           gcloud run deploy "${{ env.SERVICE_NAME }}" \
             --project "${{ vars.GCP_PROJECT_ID }}" \
