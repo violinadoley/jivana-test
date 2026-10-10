@@ -58,6 +58,12 @@ class Settings(BaseSettings):
 
     # legacy | adk | auto (prefer ADK when google-adk is installed)
     agent_backend: str = Field(default="auto", alias="AGENT_BACKEND")
+    # Optional hosted runtime (Agent Engine). In-process ADK used when unset.
+    vertex_agent_engine_id: str | None = Field(default=None, alias="VERTEX_AGENT_ENGINE_ID")
+
+    smart_client_id: str | None = Field(default=None, alias="SMART_CLIENT_ID")
+    smart_fhir_iss: str | None = Field(default=None, alias="SMART_FHIR_ISS")
+    smart_app_launch_url: str | None = Field(default=None, alias="SMART_APP_LAUNCH_URL")
 
     @property
     def effective_gcp_project_id(self) -> str | None:
@@ -106,6 +112,14 @@ class Settings(BaseSettings):
     @property
     def firebase_configured(self) -> bool:
         return bool(self.firebase_project_id)
+
+    @property
+    def vertex_agent_engine_configured(self) -> bool:
+        return bool(self.vertex_agent_engine_id and self.vertex_agent_engine_id.strip())
+
+    @property
+    def smart_on_fhir_configured(self) -> bool:
+        return bool(self.smart_client_id and self.smart_app_launch_url)
 
 
 @lru_cache

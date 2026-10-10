@@ -9,7 +9,8 @@
     "start": "serve out -l 3000",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test:e2e": "NEXT_PUBLIC_MVP_WORKBENCH=true playwright test"
+    "test:e2e": "NEXT_PUBLIC_MVP_WORKBENCH=true playwright test",
+    "test:e2e:deployed": "playwright test -c playwright.deployed.config.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
