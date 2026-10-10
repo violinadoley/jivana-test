@@ -105,7 +105,7 @@ class _LiveVertexSearchClient:
 
     def search(self, query: str, *, page_size: int) -> list[SearchHit]:
         from google.api_core.client_options import ClientOptions
-        from google.cloud import discoveryengine_v1 as discoveryengine  # type: ignore[attr-defined]
+        from google.cloud import discoveryengine_v1 as discoveryengine
 
         project = self._settings.effective_gcp_project_id
         location = self._settings.vertex_search_location

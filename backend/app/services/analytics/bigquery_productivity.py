@@ -37,7 +37,7 @@ class BigQueryProductivityService:
             "recorded_at": datetime.now(UTC).isoformat(),
         }
         try:
-            from google.cloud import bigquery  # type: ignore[attr-defined]
+            from google.cloud import bigquery
 
             client = bigquery.Client(project=project)
             errors = client.insert_rows_json(table_id, [row])
