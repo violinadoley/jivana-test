@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import UTC, datetime
 from typing import Any
@@ -34,7 +35,8 @@ class BigQueryProductivityService:
         row = {
             "event_type": event_type,
             "user_id": user_id,
-            "metadata": metadata or {},
+            # BigQuery JSON columns expect a JSON-encoded string in streaming inserts.
+            "metadata": json.dumps(metadata or {}),
             # Streaming insert expects TIMESTAMP-compatible string (not all ISO-8601 variants).
             "recorded_at": now.strftime("%Y-%m-%d %H:%M:%S.%f"),
         }
