@@ -23,17 +23,18 @@ flowchart LR
   API --> FS
   API --> GCS
 
+  ADK[Google_ADK_in_process]
+
+  API --> ADK
+  ADK --> Gemini
+
   subgraph future [Future_extensions]
-    RAG[RAG]
-    VS[Vector_Search]
-    ADK[Google_ADK]
-    Tools[Tool_calling]
+    RAG[RAG_embeddings]
+    AE[Agent_Engine_hosted]
   end
 
   API -.-> RAG
-  RAG -.-> VS
-  API -.-> ADK
-  ADK -.-> Tools
+  ADK -.-> AE
 ```
 
 ## Request flow (implemented)
@@ -52,7 +53,7 @@ File uploads follow the same path through `POST /api/v1/files/upload` with type/
 | Structured outputs | `GeminiService.generate_structured_output` | Use `response_schema` in GenAI config |
 | Multimodal | `GeminiService.analyze_image` | Pass image parts to `generate_content` |
 | Chat / RAG | `GeminiService.generate_with_context` | Firestore + embeddings + vector search |
-| Agents | New `services/ai/adk/` | Google ADK when you add agentic workflows |
+| Agents | `backend/app/ai/adk/` | Google ADK — copilot, research, meetings, workflows (not med rec) |
 | Persistence | `FirestoreService` | Chat history, user profiles, activity feed |
 
 ## Security model

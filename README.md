@@ -1,223 +1,152 @@
 # JIVANA
 
-**AI Builder Cup 2026 · Future of Work & Enterprise Productivity · Healthcare**
-
-JIVANA is an AI-powered workspace that transforms how healthcare teams **access knowledge**, **collaborate**, **make decisions**, and **complete everyday work**—with Document AI med reconciliation, enterprise search, copilot, meeting intelligence, research, and agentic workflows on **Google Cloud**.
-
-| Doc | Purpose |
-|-----|---------|
-| [Design & how it works](docs/product/jivana-design-and-operations.md) | Architecture, flows, demo script, GCP mapping |
-| [Roadmap / judge demo](docs/product/jivana-roadmap.md) | Competition alignment checklist |
-| [MedDocs setup](docs/setup/document-ai-vertex-meddocs.md) | Document AI + Vertex med rec |
-
-**Starter release:** [v1.0.0](https://github.com/violinadoley/JIVANA/releases/tag/v1.0.0).
+**Healthcare enterprise knowledge workspace** — medication reconciliation with human sign-off, intelligent search, copilot, meetings, research, and agentic workflows on **Google Cloud**.
 
 | | |
 |---|---|
-| **Live app** | [Open dashboard](https://project-bf77a013-c0b3-413c-a75.web.app/dashboard) |
-| **API (Swagger)** | Set `BACKEND_API_URL` in GitHub Variables (updated each Deploy API) or use your Cloud Run `/docs` URL |
-| **Starter guide** | [docs/starter-template.md](docs/starter-template.md) |
-| **Architecture decisions** | [docs/architecture/technology-decision-process.md](docs/architecture/technology-decision-process.md) |
+| **Live app** | [Dashboard](https://project-bf77a013-c0b3-413c-a75.web.app/dashboard) |
+| **SMART launch** | [/smart/launch](https://project-bf77a013-c0b3-413c-a75.web.app/smart/launch) |
+| **API** | Cloud Run base URL in GitHub var `PUBLIC_API_URL`; Swagger at `BACKEND_API_URL` or `{API}/docs` |
 
-Replace `PROJECT_NAME` and URLs when you fork for your own GCP project. Setup: [firebase-hosting.md](docs/setup/firebase-hosting.md).
+## Documentation map
 
-## Overview
+| Doc | Audience |
+|-----|----------|
+| **[Team onboarding](docs/development/team-onboarding.md)** | New developers — clone, env, secrets, stack |
+| **[Environment variables](docs/development/environment-variables.md)** | Full `.env` / GitHub Variables reference |
+| **[Design & operations](docs/product/jivana-design-and-operations.md)** | Product architecture, request flows, GCP mapping |
+| **[Verify integrations](docs/setup/verify-integrations.md)** | Post-deploy smoke and platform probes |
+| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Branching, PRs, **git author / no Cursor co-author** |
 
-Production-quality **starter monorepo** for a Google-native AI hackathon project. It includes a Next.js dashboard, FastAPI backend with Gemini, Firebase-ready auth/data/storage hooks, Docker for Cloud Run, tests, and CI.
+## Tech stack (what we use and why)
 
-Replace placeholders (`PROJECT_NAME`, problem statement, domain logic) after your team selects a competition track.
+| Layer | Technology | Role in JIVANA |
+|-------|------------|----------------|
+| **Frontend** | Next.js 16, React 19, TypeScript | Static export to Firebase Hosting; workspace UI |
+| **UI** | Tailwind CSS 4, shadcn/ui | Layout, forms, med rec workbench |
+| **API** | FastAPI, Python 3.11+, Uvicorn | Single BFF — auth, med rec, AI, search, FHIR |
+| **AI models** | Gemini 2.5 Flash (`google-genai`) | All server-side generation and structured extract |
+| **AI agents** | Google ADK (`google-adk`) on Cloud Run | Copilot, research, meetings, workflow planner |
+| **Documents** | Document AI, Vertex (ADC) | PDF/image intake; plain text uses direct extract |
+| **Search** | Vertex AI Search + institutional JSON | Enterprise search tab |
+| **Database** | Firestore (Firebase Admin SDK) | Jobs, sessions, activity — no client-side DB access |
+| **Storage** | Google Cloud Storage | File uploads via API |
+| **Analytics** | BigQuery (optional) | Productivity events |
+| **Clinical interop** | Cloud Healthcare API (FHIR R4) | Bundle export after review |
+| **EHR embed** | SMART on FHIR (config + launch page) | Demo launch; full OAuth not implemented |
+| **Auth** | Firebase Auth (Google) | Optional ID tokens to API |
+| **Deploy** | Cloud Run + Firebase Hosting | GitHub Actions OIDC, no keys in repo |
+| **Quality** | pytest, ruff, mypy, ESLint, Playwright, ai-evals | CI on every PR |
 
-**GitHub Actions variables** (see [docs/security-defaults.md](docs/security-defaults.md)):
+Vertex **Agent Engine** is optional future hosting for ADK ([docs](docs/setup/vertex-ai-agent-engine.md)); production uses **in-process ADK** today.
 
-| Variable | Purpose |
-|----------|---------|
-| `PUBLIC_API_URL` | Cloud Run **base URL** (no `/docs`) — baked into the frontend as `NEXT_PUBLIC_API_URL` |
-| `BACKEND_API_URL` | **Swagger** URL (`…/docs`) — updated after Deploy API for humans / README links |
+## Repository layout
 
-Local API docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
-
-## Problem
-
-Healthcare teams lose productivity when knowledge is scattered across policies, meetings, and documents—and when medication lists disagree at care transitions without auditable review.
-
-## Solution (workspace modules)
-
-| Module | API |
-|--------|-----|
-| Copilot | `POST /api/v1/copilot/chat` |
-| Intelligent search | `GET /api/v1/search` |
-| **Discharge med rec workbench (MVP)** | `POST /api/v1/meddocs/cases`, `…/reconcile`, `PATCH …/items/{item_id}`, `…/finalize-review` |
-| Document intelligence (legacy one-shot) | `POST /api/v1/meddocs/reconciliation` |
-| Meeting intelligence | `POST /api/v1/meetings/intelligence` |
-| Research | `POST /api/v1/research/synthesize` |
-| Workflow agent | `POST /api/v1/workflows/agent-run` |
-| Platform status | `GET /api/v1/platform/capabilities` |
-
-Open **`/dashboard`**. For the hackathon MVP, set **`NEXT_PUBLIC_MVP_WORKBENCH=true`** in `frontend/.env.local` (see `.env.local.example`) for the case-centric discharge workbench. Enterprise tabs remain in code behind that flag. Setup: [document-ai-vertex-meddocs.md](docs/setup/document-ai-vertex-meddocs.md), [vertex-ai-search-bigquery.md](docs/setup/vertex-ai-search-bigquery.md).
-
-## Key Features
-
-- Discharge medication reconciliation workbench (per-item review, finalize attestation, HTML summary)
-- Optional eight-tab enterprise workspace (hidden when `NEXT_PUBLIC_MVP_WORKBENCH=true`)
-- Gemini on Vertex AI (Cloud Run) + optional Vertex AI Search, Document AI, Healthcare FHIR, BigQuery events
-- Firebase Auth, Firestore activity/sessions, GCS uploads
-- pytest + Playwright smoke + GitHub Actions CI/deploy
-
-## Tech Stack
-
-| Layer | Technologies |
-|-------|----------------|
-| Frontend | Next.js, React, TypeScript, Tailwind CSS, shadcn/ui, Lucide |
-| Backend | Python 3.11+, FastAPI, Uvicorn, Pydantic Settings |
-| AI | Google Gemini (`google-genai`) |
-| Data / Auth | Firebase (Auth, Firestore, Storage) |
-| Deploy | Cloud Run (API), Firebase Hosting (UI, static export) |
-
-## Architecture
-
-See [docs/architecture.md](docs/architecture.md) for diagrams and extension points (RAG, ADK, embeddings — **future**).
-
-## Local Setup
-
-```bash
-git clone <your-repo-url>
-cd ai-hackathon-starter
-cp backend/.env.example backend/.env
-cp frontend/.env.local.example frontend/.env.local
-# Add GEMINI_API_KEY to backend/.env
+```text
+frontend/                 Next.js app (App Router, static export)
+backend/app/              FastAPI — api/, services/, ai/ (prompts + ADK)
+backend/tests/            Pytest
+docs/                     Architecture, setup, runbooks, product
+ai-evals/regression/      Prompt / AI regression harness
+scripts/                  dev.sh, smoke-api.sh, verify-platform.sh
+.github/workflows/        ci.yml, deploy.yml, deploy-frontend.yml
 ```
 
-Or run `./scripts/dev.sh` for instructions.
+## Local development
 
-## Environment Variables
-
-**Backend** (`backend/.env`): `GEMINI_API_KEY`, `GEMINI_MODEL`, `FIREBASE_PROJECT_ID`, `FIREBASE_STORAGE_BUCKET`, `AUTH_REQUIRED`, `MAX_UPLOAD_SIZE_MB`, `CORS_ORIGINS`, etc. See [backend/.env.example](backend/.env.example).
-
-**Frontend** (`frontend/.env.local`): `NEXT_PUBLIC_API_URL` (same meaning as `PUBLIC_API_URL`), `NEXT_PUBLIC_FIREBASE_*`, `NEXT_PUBLIC_AUTH_REQUIRED`. See [frontend/.env.local.example](frontend/.env.local.example).
-
-Security defaults (auth, public API, CI gates): [docs/security-defaults.md](docs/security-defaults.md).
-
-Optional product analytics (PostHog): [docs/setup/posthog.md](docs/setup/posthog.md).
-
-## Running Frontend
+**Requirements:** Node 22, Python 3.11+, npm. See [team onboarding](docs/development/team-onboarding.md) for details.
 
 ```bash
-cd frontend
-npm install
+git clone git@github.com:violinadoley/JIVANA.git
+cd JIVANA
+
+# Backend
+cd backend && python3.11 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-dev.txt
+cp .env.example .env    # set GEMINI_API_KEY
+uvicorn app.main:app --reload --reload-dir app --port 8000
+
+# Frontend (new terminal)
+cd frontend && npm ci
+cp .env.local.example .env.local    # NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+- UI: [http://localhost:3000](http://localhost:3000) · API docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- Helper: `./scripts/dev.sh`
 
-## Running Backend
+### Teammate checklist
 
-```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --reload-dir app --port 8000
-```
+1. Copy `backend/.env.example` → `backend/.env` and `frontend/.env.local.example` → `frontend/.env.local`.
+2. Obtain **`GEMINI_API_KEY`** from the team vault or [AI Studio](https://aistudio.google.com/apikey) (never commit it).
+3. Set `NEXT_PUBLIC_API_URL=http://127.0.0.1:8000` and `NEXT_PUBLIC_MVP_WORKBENCH=true`.
+4. Optional: Firebase web vars for sign-in; GCP ADC for Document AI / FHIR locally (`gcloud auth application-default login`).
 
-Health check: [http://localhost:8000/health](http://localhost:8000/health)
+Full variable list: [environment-variables.md](docs/development/environment-variables.md).
+
+## Dependencies
+
+| File | Purpose |
+|------|---------|
+| [backend/requirements.txt](backend/requirements.txt) | Production API (FastAPI, google-genai, google-adk, Firebase, Document AI, Discovery Engine, BigQuery) |
+| [backend/requirements-dev.txt](backend/requirements-dev.txt) | pytest, ruff, mypy, bandit, pip-audit |
+| [frontend/package.json](frontend/package.json) | Next.js, Firebase client, Playwright (dev) |
+
+Install dev tooling: `pip install -r backend/requirements-dev.txt` and `npm ci` in `frontend/`.
 
 ## Testing
 
-See [docs/development/testing-strategy.md](docs/development/testing-strategy.md).
-
 ```bash
-cd backend && pip install -r requirements-dev.txt
-ruff check app tests && mypy app && pytest -q
-PYTHONPATH=. pytest ../ai-evals/regression -q
-
-cd frontend && npm ci
-npm run lint && npm run typecheck && npm run build
-npm run test:e2e
+cd backend && ruff check app tests && mypy app && pytest -q
+cd frontend && npm run lint && npm run typecheck && npm run build && npm run test:e2e
 ```
 
-## Git workflow
+Strategy: [docs/development/testing-strategy.md](docs/development/testing-strategy.md).
 
-- Feature branches merge into `develop` via PR; **`develop`** triggers Cloud Run deploy
-- **`main`** is the stable branch (no separate prod deploy in this hackathon setup)
-- See [CONTRIBUTING.md](CONTRIBUTING.md)
+## Git workflow and contributors
+
+- Work on `feature/*` or `fix/*` from **`develop`**; merge via PR with green CI.
+- **`develop`** deploys API + frontend to GCP.
+- Commits must use **your** GitHub user. Do **not** add `Co-authored-by: Cursor <cursoragent@cursor.com>` ([CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ## CI/CD
 
-| Workflow | Trigger | Status |
-|----------|---------|--------|
-| [ci.yml](.github/workflows/ci.yml) | PR + push to `main` / `develop` | **AUTOMATED** (in repo) |
-| [deploy.yml](.github/workflows/deploy.yml) | push to `develop` | Cloud Run API |
-| [deploy-frontend.yml](.github/workflows/deploy-frontend.yml) | push to `develop` | Firebase Hosting (free) |
+| Workflow | Trigger |
+|----------|---------|
+| [ci.yml](.github/workflows/ci.yml) | PR and push to `main` / `develop` |
+| [deploy.yml](.github/workflows/deploy.yml) | Push to `develop` → Cloud Run |
+| [deploy-frontend.yml](.github/workflows/deploy-frontend.yml) | Push to `develop` → Hosting + hosted Playwright smoke |
 
-Setup: [docs/setup/github-google-oidc.md](docs/setup/github-google-oidc.md) · [docs/setup/firebase-hosting.md](docs/setup/firebase-hosting.md) · [docs/setup/firebase-backend.md](docs/setup/firebase-backend.md)
+Setup: [github-google-oidc.md](docs/setup/github-google-oidc.md) · [firebase-hosting.md](docs/setup/firebase-hosting.md) · [firebase-backend.md](docs/setup/firebase-backend.md)
 
-## Deployment
+## Product modules (API)
 
-- Overview: [docs/deployment.md](docs/deployment.md)
-- Cloud Run: [docs/deployment/cloud-run.md](docs/deployment/cloud-run.md)
-- Rollback: [docs/runbooks/rollback.md](docs/runbooks/rollback.md)
-- Post-deploy checks: [docs/setup/verify-integrations.md](docs/setup/verify-integrations.md) (`./scripts/smoke-api.sh`, `./scripts/verify-platform.sh`)
+| Module | Entry points |
+|--------|----------------|
+| Discharge med rec (MVP) | `POST /api/v1/meddocs/cases`, reconcile, per-item review, finalize |
+| Copilot | `POST /api/v1/copilot/chat` |
+| Search | `GET /api/v1/search` |
+| Meetings / Research / Workflows | `/api/v1/meetings/*`, `/research/*`, `/workflows/*` |
+| Platform status | `GET /api/v1/platform/capabilities`, `/demo-readiness` |
+| SMART | `GET /api/v1/smart/configuration`, `/smart/launch` |
 
-## Google Cloud Setup
+Workbench UI: **`/dashboard`**. SMART: **`/smart/launch`**.
 
-1. Create a GCP project and enable Cloud Run, Cloud Build, Secret Manager.
-2. Store `GEMINI_API_KEY` in Secret Manager.
-3. Deploy the backend from `./backend` (Dockerfile included).
+## Production verification
 
-## Firebase Setup
-
-1. Add Firebase to the same GCP project as Cloud Run.
-2. Follow [docs/setup/firebase-hosting.md](docs/setup/firebase-hosting.md) (public UI) and [docs/setup/firebase-backend.md](docs/setup/firebase-backend.md) (Auth, Firestore, Storage, GitHub vars).
-3. Sync web client vars: `./scripts/sync-firebase-github-vars.sh YOUR_GCP_PROJECT_ID` (after `firebase login` and a registered Web app).
-
-## Gemini Setup
-
-1. Get an API key from [Google AI Studio](https://aistudio.google.com/apikey).
-2. Set `GEMINI_API_KEY` and optionally `GEMINI_MODEL` (default `gemini-2.5-flash`).
-
-## Project Structure
-
-```
-frontend/          Next.js App Router UI
-backend/app/       FastAPI application
-backend/tests/     Pytest suite
-docs/              Architecture, ADRs, runbooks, deployment, security
-ai-evals/          AI regression framework (datasets + evaluators)
-infra/             Infra conventions (no Terraform by default)
-scripts/           dev.sh, deploy.sh, smoke-api.sh, verify-platform.sh
-.github/workflows/ CI + Cloud Run deploy
+```bash
+API_BASE_URL=https://YOUR_CLOUD_RUN_URL ./scripts/smoke-api.sh
+API_BASE_URL=https://YOUR_CLOUD_RUN_URL ./scripts/verify-platform.sh --probe
 ```
 
-## Starter template status
+Hosted E2E: `cd frontend && npm run test:e2e:deployed` (after deploy).
 
-The **platform starter** (CI/CD, Hosting, Cloud Run, Auth, activity in Firestore, uploads to Storage) is complete on `develop`. See [docs/starter-template.md](docs/starter-template.md). Build your competition on top via prompts, routes, and UI — [docs/architecture.md](docs/architecture.md).
+## Security
 
-## Future Enhancements (product team)
-
-- [ ] Competition-specific prompts and workflows
-- [ ] Richer chat history and user-scoped activity
-- [ ] RAG + Gemini embeddings + vector search
-- [ ] Google ADK agentic tools
-- [ ] Structured outputs and multimodal pipelines
-
-## Competition Submission Checklist
-
-- [ ] Correct problem statement selected
-- [ ] Gemini/Gemma integration
-- [ ] Functional prototype
-- [ ] Cloud deployment
-- [ ] Public demo URL
-- [ ] 3-minute demo video
-- [ ] Proposal PDF
-- [ ] Documentation
-- [ ] Category specified
-- [ ] Impact clearly explained
-- [ ] Scalability explained
-
-## Optional (local dev only)
-
-IDE MCP helpers for this repo: [docs/mcp.md](docs/mcp.md) — not part of the deployed product.
+- No secrets in Git; Gitleaks in CI.
+- Gemini key on Cloud Run via Secret Manager.
+- [Security defaults](docs/security-defaults.md) — auth off by default for demos.
 
 ## License
 
-[MIT](LICENSE) — adjust copyright holder if your team requires a different license for submission.
+[MIT](LICENSE)
