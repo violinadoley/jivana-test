@@ -4,7 +4,7 @@
 
 Deploy workflow (`.github/workflows/deploy.yml`) authenticates with **short-lived credentials** via GitHub OIDC and Google Workload Identity Federation (WIF). Do **not** store a service account JSON key in GitHub unless you have documented an unavoidable exception.
 
-For this hackathon starter, use **one GCP project** for the deployed API.
+For JIVANA, use **one GCP project** for Cloud Run, Firebase, and integrated services (Document AI, Healthcare API, BigQuery, Vertex Search).
 
 ## Prerequisites
 

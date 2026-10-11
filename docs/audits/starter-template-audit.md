@@ -1,6 +1,8 @@
 # Starter template audit (2026-10-09)
 
-Full audit performed against the AI Builder Cup starter (platform only). This document summarizes outcomes through **1.0.0**.
+> **Historical snapshot** — platform-only audit through **v1.0.0**. JIVANA product features shipped afterward; use [product/backlog.md](../product/backlog.md) for current status.
+
+Full audit performed against the AI Builder Cup starter (platform only).
 
 ## Verdict
 

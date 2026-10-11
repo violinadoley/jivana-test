@@ -4,8 +4,8 @@
 
 | Environment | Where it runs | Data |
 |-------------|---------------|------|
-| Local | localhost | Dev Firebase / emulators / dev Gemini key |
-| Cloud | Cloud Run (`ai-hackathon-api`) | Your hackathon GCP project |
+| Local | localhost | Tier A–C per [team-onboarding.md](./team-onboarding.md) |
+| Cloud | Cloud Run service `ai-hackathon-api` | Team GCP project (`develop` deploy) |
 
 ## Daily flow
 
@@ -19,7 +19,7 @@
 
 ## `main` branch
 
-`main` stays the stable line for releases and branch protection. This starter does **not** deploy a second environment from `main` — only `develop` triggers Cloud Run deploy. Merge `develop` → `main` when you want `main` to match what you demoed.
+`main` stays the stable line for releases and branch protection. Only **`develop`** triggers Cloud Run and Hosting deploy. Merge `develop` → `main` when you want a stable snapshot of what you shipped.
 
 ## Emergency
 

@@ -1,53 +1,57 @@
-# JIVANA — competition alignment (Future of Work · Healthcare)
+# JIVANA — demo and competition alignment
 
-**Full design & operations:** [jivana-design-and-operations.md](./jivana-design-and-operations.md)
+**Design and operations:** [jivana-design-and-operations.md](./jivana-design-and-operations.md)  
+**Backlog:** [backlog.md](./backlog.md)
 
-## Problem statement (product target)
+## Problem statement
 
-Transform how individuals and organizations in **healthcare** access knowledge, collaborate, make decisions, and complete everyday work—with measurable productivity, efficiency, knowledge accessibility, and workflow execution.
+Healthcare teams lose time when knowledge is scattered and when medication lists disagree at care transitions without auditable human review.
 
-## Solution directions → product modules
+## Product modules
 
-| Direction | JIVANA module | API / stack |
-|-----------|---------------|-------------|
-| Enterprise knowledge assistant | Overview Q&A + **Copilot** tab | `/api/v1/copilot/chat`, Firestore sessions, institutional corpus |
-| AI copilot | **Copilot** + **Workflow agent** | Vertex Gemini on Cloud Run |
-| Document intelligence | **Documents** tab | Document AI, Vertex med rec, Healthcare FHIR export |
-| Meeting intelligence | **Meetings** tab | `/api/v1/meetings/intelligence` |
-| Workflow automation | **Workflows** tab + review queue | `/api/v1/workflows/agent-run`, human sign-off |
-| Research assistant | **Research** tab | `/api/v1/research/synthesize` |
-| Intelligent search | **Search** tab | Vertex AI Search + corpus (`/api/v1/search`) |
+| Module | UI | API |
+|--------|-----|-----|
+| Discharge / admission / transfer med rec | **Discharge med rec** tab | `/api/v1/meddocs/cases`, reconcile, review, finalize |
+| Copilot | **Copilot** tab | `/api/v1/copilot/chat` |
+| Search | **Search** tab | `/api/v1/search` |
+| Meetings | **Meetings** tab | `/api/v1/meetings/intelligence` |
+| Research | **Research** tab | `/api/v1/research/synthesize` |
+| Workflows | **Workflows** tab | `/api/v1/workflows/agent-run` |
+| Insights | **Insights** tab | `/api/v1/analytics/productivity` |
+| SMART embed | `/smart/launch` | `/api/v1/smart/*` |
 
-## Suggested Google Cloud technologies
+## Google Cloud integration status (production project)
 
-| Technology | Status in app |
-|------------|----------------|
-| Gemini on Vertex AI | **Verified** (Cloud Run ADC) |
-| Vertex AI Search | **Partial** — wire `VERTEX_SEARCH_DATA_STORE_ID` ([setup](../setup/vertex-ai-search-bigquery.md)) |
-| Document AI | **Verified** in cloud when processor set |
-| Workflow agent (knowledge → search → plan) | **Verified** — FastAPI orchestration with visible steps in UI |
-| Vertex AI Agent Engine / Google ADK | **Optional / Phase 2** — hosted agent runtime; not required for end-to-end demo |
-| Cloud Run | **Verified** |
-| BigQuery | **Partial** — productivity event stream when dataset configured |
-| Firestore | **Verified** — activity, copilot sessions, med rec jobs |
-| Cloud Healthcare API | **Partial** — FHIR export after review |
+| Technology | Status |
+|------------|--------|
+| Gemini on Vertex AI (Cloud Run ADC) | **Verified** |
+| Google ADK (in-process) | **Verified** |
+| Vertex AI Search | **Verified** when data store configured |
+| Document AI | **Verified** when processor configured |
+| Firestore / Storage | **Verified** |
+| BigQuery productivity events | **Verified** when dataset configured |
+| Cloud Healthcare FHIR export | **Verified** when store configured |
+| SMART on FHIR (launch + config) | **Verified**; OAuth token exchange not implemented |
+| Vertex AI Agent Engine | **Optional** — stub env only; ADK on Cloud Run is production path |
 
-## What judges should demo (15 min script)
+Setup pointers: [docs/README.md](../README.md).
 
-Hybrid workspace on `/dashboard` (default): **Discharge med rec** tab first, then tool tabs.
+## Suggested demo script (~15 min)
 
-1. **Discharge med rec** — demo trio → per-item review → finalize → HTML summary.  
-2. **Search** — policy query (Vertex or corpus).  
-3. **Meetings** — paste transcript → action items.  
-4. **Copilot** — follow-up question with session memory.  
-5. **Research** — cited synthesis.  
-6. **Workflows** — agent plan with tool list.  
-7. **Insights** — activity + BigQuery note.
+On `/dashboard` (MVP workbench):
 
-## Still optional / Phase 2
+1. **Discharge med rec** — create case → reconcile → per-item review → finalize → summary  
+2. **Search** — policy query  
+3. **Meetings** — transcript → actions  
+4. **Copilot** — follow-up with session  
+5. **Research** — cited synthesis  
+6. **Workflows** — agent plan with tool steps  
+7. **Insights** — activity and med-rec metrics  
 
-- Native **Google ADK** / **Vertex AI Agent Engine** hosting (replace FastAPI tool loop).
-- **AlloyDB** if relational reporting outgrows Firestore.
-- Live **SMART on FHIR** EHR sidebar (export hook exists today).
+Optional: `/smart/launch` → workspace.
 
-No git push until local QA passes — see [backlog.md](./backlog.md).
+## Phase 2 (optional)
+
+- Vertex AI **Agent Engine** hosting for ADK (see [vertex-ai-agent-engine.md](../setup/vertex-ai-agent-engine.md))
+- Full **SMART OAuth** and patient context sessions
+- **AlloyDB** if reporting outgrows Firestore

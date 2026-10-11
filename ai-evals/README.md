@@ -28,13 +28,12 @@ pytest ../ai-evals/regression -q
 - Any PR that changes `backend/app/ai/**`, prompts, model config, or retrieval
 - Before promoting `develop` → `main`
 
-## TODO (product team)
+## Future eval work (optional)
 
-- [ ] Define golden Q&A dataset for your problem domain
-- [ ] Add groundedness/faithfulness checks against retrieved context
-- [ ] Add structured-output schema validation tests
-- [ ] Add latency/cost budgets per eval case
-- [ ] Wire live Gemini calls only in scheduled/staging jobs (not every PR) if cost is a concern
+- Expand golden datasets for med rec and copilot domains
+- Add groundedness/faithfulness scorers against retrieved context
+- Add latency/cost budgets per eval case
+- Run live Gemini evals only in scheduled jobs if PR cost is a concern
 
 ## Regression policy
 

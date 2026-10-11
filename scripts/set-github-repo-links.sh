@@ -15,7 +15,7 @@ fi
 
 gh repo edit "$REPO" \
   --homepage "$HOMEPAGE" \
-  --description "Google-native AI hackathon starter (v1.0.0) — Next.js, FastAPI, Gemini, Firebase."
+  --description "JIVANA — healthcare enterprise workspace on Google Cloud (Next.js, FastAPI, Gemini, Firebase)."
 
 gh variable set BACKEND_API_URL --body "$API_DOCS" --repo "$REPO"
 

@@ -1,6 +1,6 @@
 # Security defaults (starter template)
 
-Deliberate choices for the hackathon starter. Change them when you harden for a public competition demo or production.
+Deliberate choices for JIVANA (evolved from the hackathon starter). Change them when you harden for production or login-only demos.
 
 ## Authentication
 

@@ -15,14 +15,14 @@ Use this when the old repo has **orphan commits** (e.g. `cursoragent`) that stil
 
 ## 1. Choose a name
 
-Example: `violinadoley/meddocs-hackathon` or `violinadoley/ai-hackathon-starter`.
+Example: `violinadoley/JIVANA`.
 
 ## 2. Export clean tree (no old git history)
 
 On your Mac, from a clone that has **`feature/meddocs-module-1-ea6e`** (includes MedDocs Module 1):
 
 ```bash
-cd ~/Projects/ai-hackathon-starter
+cd ~/Projects/JIVANA
 git fetch origin
 git checkout feature/meddocs-module-1-ea6e
 git pull
@@ -84,7 +84,7 @@ Old repo → **Settings → Danger zone → Archive repository**.
 Update local clone:
 
 ```bash
-cd ~/Projects/ai-hackathon-starter   # or rename folder to match new repo
+cd ~/Projects/JIVANA   # or rename folder to match new repo
 git remote set-url origin git@github.com:violinadoley/YOUR_NEW_REPO_NAME.git
 ```
 
