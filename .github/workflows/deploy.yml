@@ -112,6 +112,10 @@ jobs:
           if [ -z "$HEALTHCARE_LOCATION" ]; then
             HEALTHCARE_LOCATION="us-central1"
           fi
+          SMART_APP_LAUNCH_URL="${{ vars.SMART_APP_LAUNCH_URL }}"
+          SMART_CLIENT_ID="${{ vars.SMART_CLIENT_ID }}"
+          SMART_FHIR_ISS="${{ vars.SMART_FHIR_ISS }}"
+          VERTEX_AGENT_ENGINE_ID="${{ vars.VERTEX_AGENT_ENGINE_ID }}"
           ENV_FILE="$(mktemp)"
           {
             echo "ENVIRONMENT: cloud"
@@ -136,6 +140,10 @@ jobs:
             echo "HEALTHCARE_DATASET_ID: \"${HEALTHCARE_DATASET_ID}\""
             echo "HEALTHCARE_FHIR_STORE_ID: \"${HEALTHCARE_FHIR_STORE_ID}\""
             echo "HEALTHCARE_LOCATION: \"${HEALTHCARE_LOCATION}\""
+            echo "SMART_APP_LAUNCH_URL: \"${SMART_APP_LAUNCH_URL}\""
+            echo "SMART_CLIENT_ID: \"${SMART_CLIENT_ID}\""
+            echo "SMART_FHIR_ISS: \"${SMART_FHIR_ISS}\""
+            echo "VERTEX_AGENT_ENGINE_ID: \"${VERTEX_AGENT_ENGINE_ID}\""
           } > "$ENV_FILE"
           gcloud run deploy "${{ env.SERVICE_NAME }}" \
             --project "${{ vars.GCP_PROJECT_ID }}" \

@@ -18,7 +18,8 @@
 
 - [ ] Full SMART OAuth token exchange + patient context session
 - [ ] Deploy agents to Vertex AI Agent Engine and set `VERTEX_AGENT_ENGINE_ID`
-- [ ] Set `SMART_CLIENT_ID` + `SMART_APP_LAUNCH_URL` on Cloud Run / GitHub vars
+- [x] `SMART_APP_LAUNCH_URL`, `SMART_FHIR_ISS`, `NEXT_PUBLIC_SITE_URL` on GitHub Variables
+- [ ] `SMART_CLIENT_ID` (OAuth Web client — Console step in [smart-on-fhir.md](../setup/smart-on-fhir.md))
 
 ## Competition / polish
 
