@@ -42,7 +42,7 @@ if ! git config user.email >/dev/null; then
   exit 1
 fi
 
-git commit -m "Initial commit: AI hackathon starter with MedDocs Module 1
+git commit -m "Initial commit: JIVANA healthcare workspace
 
 Synthetic med reconciliation prototype, FastAPI + Next.js, CI and deploy workflows.
 Single clean history for submission (no third-party bot authors)."

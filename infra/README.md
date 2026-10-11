@@ -1,6 +1,6 @@
 # Infrastructure
 
-This repository does **not** use Terraform by default (team size and hackathon scope).
+This repository does **not** use Terraform by default (operational simplicity).
 
 ## What lives here
 
@@ -15,7 +15,7 @@ This repository does **not** use Terraform by default (team size and hackathon s
 | Docker image | `ai-hackathon-api:$GIT_SHA` |
 | Artifact Registry repo | `ai-hackathon` |
 
-Replace `ai-hackathon` prefix when you rename the product.
+GCP resource names keep the **`ai-hackathon-*`** prefix for compatibility with existing deploys; the product brand is **JIVANA**.
 
 ## Setup
 

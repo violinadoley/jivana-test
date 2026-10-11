@@ -10,6 +10,8 @@
 
 ## Documentation map
 
+Full index: **[docs/README.md](docs/README.md)**
+
 | Doc | Audience |
 |-----|----------|
 | **[Team onboarding](docs/development/team-onboarding.md)** | New developers — clone, env, secrets, stack |
@@ -44,12 +46,12 @@ Vertex **Agent Engine** is optional future hosting for ADK ([docs](docs/setup/ve
 
 ```text
 frontend/                 Next.js app (App Router, static export)
-backend/app/              FastAPI — api/, services/, ai/ (prompts + ADK)
-backend/tests/            Pytest
-docs/                     Architecture, setup, runbooks, product
-ai-evals/regression/      Prompt / AI regression harness
+backend/                  FastAPI — app/, tests/, requirements*.txt
+docs/                     Documentation index: docs/README.md
+ai-evals/                 Prompt / AI regression harness
 scripts/                  dev.sh, smoke-api.sh, verify-platform.sh
 .github/workflows/        ci.yml, deploy.yml, deploy-frontend.yml
+infra/                    GCP naming notes (no Terraform by default)
 ```
 
 ## Local development
