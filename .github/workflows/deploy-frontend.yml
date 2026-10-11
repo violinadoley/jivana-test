@@ -98,6 +98,7 @@ jobs:
           NEXT_PUBLIC_POSTHOG_ENABLED: ${{ vars.NEXT_PUBLIC_POSTHOG_ENABLED }}
           NEXT_PUBLIC_POSTHOG_SESSION_REPLAY: ${{ vars.NEXT_PUBLIC_POSTHOG_SESSION_REPLAY }}
           NEXT_PUBLIC_MVP_WORKBENCH: "true"
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
 
       - name: Configure hosting site id
         run: |

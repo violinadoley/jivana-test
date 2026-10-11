@@ -30,8 +30,10 @@ JIVANA runs **Google ADK in-process** on Cloud Run today (`AGENT_BACKEND=auto|ad
 | Setting | Example placeholder |
 |---------|---------------------|
 | `GCP_PROJECT_ID` | `your-hackathon-project` |
-| `VERTEX_AGENT_ENGINE_ID` | `(from console after deploy)` |
+| `VERTEX_AGENT_ENGINE_ID` | Resource id from Agent Engine console after you deploy an ADK bundle |
 | `VERTEX_LOCATION` | `us-central1` |
+
+When the engine exists, set GitHub variable `VERTEX_AGENT_ENGINE_ID` and redeploy the API ([deploy.yml](../../.github/workflows/deploy.yml)). Until then, leave it unset — Cloud Run keeps using in-process ADK.
 
 Do not commit service account JSON. Use Workload Identity Federation for CI per [github-google-oidc.md](./github-google-oidc.md).
 
