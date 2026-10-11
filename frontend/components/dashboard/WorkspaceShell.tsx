@@ -25,6 +25,7 @@ import {
   parseHybridWorkspaceTab,
   type HybridWorkspaceTabId,
 } from "@/lib/workspace-tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import type { MedReconciliationJob } from "@/types/meddocs";
 
@@ -143,6 +144,14 @@ function LegacyWorkspaceShell() {
       <DashboardWorkflowTracker />
       <DashboardHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 space-y-8 px-4 py-8 sm:px-6 sm:py-10">
+        <Alert className="border-amber-500/40 bg-amber-500/5">
+          <AlertTitle>Legacy workspace (deprecated)</AlertTitle>
+          <AlertDescription>
+            This eight-tab layout is for backward compatibility only. Use the default
+            workbench: set <code className="text-xs">NEXT_PUBLIC_MVP_WORKBENCH=true</code>{" "}
+            (production default) for case-based discharge med rec and the hybrid tool tabs.
+          </AlertDescription>
+        </Alert>
         <div className="max-w-3xl border-b border-border pb-8">
           <p className="eyebrow">{brand.track}</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">

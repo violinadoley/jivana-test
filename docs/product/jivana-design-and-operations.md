@@ -41,7 +41,7 @@ Workflows         → multi-step agent (tools then plan)
 Insights          → productivity counts + activity + med-rec metrics
 ```
 
-Set `NEXT_PUBLIC_MVP_WORKBENCH=false` for the legacy eight-tab layout (Overview + Documents job queue).
+Default UI is the **hybrid MVP workbench** (`NEXT_PUBLIC_MVP_WORKBENCH=true`, including production builds). Setting `NEXT_PUBLIC_MVP_WORKBENCH=false` opens a **deprecated** legacy eight-tab layout (Overview + Documents job queue) — scheduled for removal.
 
 ---
 
@@ -141,7 +141,7 @@ Default UI: **hybrid workspace** (`NEXT_PUBLIC_MVP_WORKBENCH` not `false`) — t
 6. **Workflows** — expand agent **steps** then plan.  
 7. **Insights** — activity + med-rec metrics; mention BigQuery if enabled.
 
-Legacy eight-tab sandbox: set `NEXT_PUBLIC_MVP_WORKBENCH=false`.
+Legacy eight-tab sandbox (deprecated): `NEXT_PUBLIC_MVP_WORKBENCH=false` — not used in production deploys.
 
 ---
 
