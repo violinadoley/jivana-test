@@ -29,6 +29,10 @@ This document marks the **infrastructure starter** as complete. Competition-spec
 - [architecture/mcp-and-tooling-catalogue.md](architecture/mcp-and-tooling-catalogue.md)
 - [architecture/healthcare-google-cloud.md](architecture/healthcare-google-cloud.md) — [Cloud Healthcare API](https://docs.cloud.google.com/healthcare-api/docs) (healthcare track)
 
+## New team members
+
+Start with [development/team-onboarding.md](development/team-onboarding.md) and [development/environment-variables.md](development/environment-variables.md).
+
 ## Day-to-day workflow
 
 1. Branch from `develop` → PR → merge to `develop` (deploys API + frontend).
