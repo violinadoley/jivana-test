@@ -46,27 +46,65 @@ Open [http://localhost:3000/dashboard](http://localhost:3000/dashboard). API doc
 
 Or print the same steps: `./scripts/dev.sh`.
 
-### Minimal local configuration
+### Three setup tiers (pick one)
+
+#### Tier A — “It runs” (smoke test)
+
+Enough to load the UI and hit AI routes. **Data is in-memory** on the API process (med rec cases and copilot sessions **reset when you restart uvicorn**).
+
+| Where | Variables |
+|-------|-----------|
+| **Backend** | `GEMINI_API_KEY` |
+| **Frontend** | `NEXT_PUBLIC_API_URL=http://127.0.0.1:8000`, `NEXT_PUBLIC_MVP_WORKBENCH=true` |
+
+Works without Firebase or GCP project credentials. Search still returns **institutional corpus** hits; Vertex Search, Document AI PDF, FHIR, BigQuery, and GCS uploads are off.
+
+#### Tier B — **Recommended for teammates** (matches how you work day to day)
+
+Same as Tier A, plus **Firebase** so cases, activity, copilot sessions, and uploads behave like cloud (shared project, data survives restarts).
 
 **Backend** (`backend/.env`):
 
-| Variable | Required locally? | Notes |
-|----------|-------------------|--------|
-| `GEMINI_API_KEY` | **Yes** (for AI routes) | [Google AI Studio](https://aistudio.google.com/apikey) — team shares one **dev** key or each uses their own |
-| `CORS_ORIGINS` | Default OK | `http://localhost:3000` |
-| `AUTH_REQUIRED` | Default `false` | Open API for local dev |
-| `AGENT_BACKEND` | Default `auto` | Uses Google ADK when installed (`requirements.txt`) |
+| Variable | Notes |
+|----------|--------|
+| `GEMINI_API_KEY` | Dev key from vault or AI Studio |
+| `FIREBASE_PROJECT_ID` | Same GCP/Firebase project as the team (e.g. `project-bf77a013-c0b3-413c-a75`) |
+| `FIREBASE_STORAGE_BUCKET` | e.g. `{project}.firebasestorage.app` |
+| `GCP_PROJECT_ID` | Usually same as Firebase project (Vertex / optional GCP APIs) |
+| Auth to Firestore | **`gcloud auth application-default login`** in the dev project, **or** `GOOGLE_APPLICATION_CREDENTIALS=/path/to/dev-sa.json` (never commit the file) |
 
 **Frontend** (`frontend/.env.local`):
 
-| Variable | Required locally? | Notes |
-|----------|-------------------|--------|
-| `NEXT_PUBLIC_API_URL` | **Yes** | `http://127.0.0.1:8000` |
-| `NEXT_PUBLIC_MVP_WORKBENCH` | Recommended `true` | Hackathon / product workbench |
-| `NEXT_PUBLIC_FIREBASE_*` | Optional | Needed only for Google sign-in UI |
-| `NEXT_PUBLIC_AUTH_REQUIRED` | Default `false` | Match backend if you enforce login |
+| Variable | Notes |
+|----------|--------|
+| `NEXT_PUBLIC_API_URL` | `http://127.0.0.1:8000` |
+| `NEXT_PUBLIC_MVP_WORKBENCH` | `true` |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | From Firebase console → Project settings → Your apps → Web |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | `{project}.firebaseapp.com` |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Same as backend |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Same as backend |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | From Firebase web config |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | From Firebase web config |
+| `NEXT_PUBLIC_AUTH_REQUIRED` | `false` locally unless testing login-only mode |
 
-GCP-backed features (Document AI med rec with PDF, Vertex Search, FHIR export, BigQuery events) need the optional backend vars in [backend/.env.example](../../backend/.env.example) **and** ADC or `GOOGLE_APPLICATION_CREDENTIALS`. Without them, many flows still work with `.txt` fixtures and institutional search corpus.
+Sync GitHub deploy vars from Firebase: `./scripts/sync-firebase-github-vars.sh YOUR_GCP_PROJECT_ID` (maintainers).
+
+#### Tier C — **Full GCP parity** (optional)
+
+Tier B **plus** copy production integration IDs from GitHub Variables (or team vault) into `backend/.env`:
+
+| Variable | Enables |
+|----------|---------|
+| `DOCUMENT_AI_PROCESSOR_ID` + `DOCUMENT_AI_LOCATION` | PDF/image med rec intake |
+| `VERTEX_SEARCH_DATA_STORE_ID` (+ location/serving config) | Live Vertex AI Search |
+| `BIGQUERY_DATASET_ID` | Productivity events to BigQuery |
+| `HEALTHCARE_DATASET_ID`, `HEALTHCARE_FHIR_STORE_ID`, `HEALTHCARE_LOCATION` | FHIR export after sign-off |
+| `SMART_*` | SMART config/redirect testing against real iss |
+| ADC or service account | Required for all of the above locally |
+
+Use the same values as [environment-variables.md](./environment-variables.md) / GitHub Actions Variables. Region for this project is typically **`asia-south1`**.
+
+**Defaults that are fine everywhere:** `CORS_ORIGINS=http://localhost:3000`, `AUTH_REQUIRED=false`, `AGENT_BACKEND=auto`.
 
 ## What to share with teammates
 

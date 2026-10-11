@@ -78,9 +78,9 @@ npm run dev
 ### Teammate checklist
 
 1. Copy `backend/.env.example` → `backend/.env` and `frontend/.env.local.example` → `frontend/.env.local`.
-2. Obtain **`GEMINI_API_KEY`** from the team vault or [AI Studio](https://aistudio.google.com/apikey) (never commit it).
-3. Set `NEXT_PUBLIC_API_URL=http://127.0.0.1:8000` and `NEXT_PUBLIC_MVP_WORKBENCH=true`.
-4. Optional: Firebase web vars for sign-in; GCP ADC for Document AI / FHIR locally (`gcloud auth application-default login`).
+2. **Minimum:** `GEMINI_API_KEY` + `NEXT_PUBLIC_API_URL=http://127.0.0.1:8000` + `NEXT_PUBLIC_MVP_WORKBENCH=true` (AI works; med rec lives in API memory until restart).
+3. **Recommended:** Firebase web config on the frontend + `FIREBASE_PROJECT_ID` / storage bucket on the backend + `gcloud auth application-default login` (persistent Firestore, like prod).
+4. **Full integrations:** Document AI, Vertex Search, Healthcare FHIR, BigQuery IDs from the team vault — see [team onboarding](docs/development/team-onboarding.md) Tier B/C.
 
 Full variable list: [environment-variables.md](docs/development/environment-variables.md).
 
