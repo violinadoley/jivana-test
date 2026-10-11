@@ -24,6 +24,10 @@ Clone and run JIVANA locally:
 
 **Branching:** feature branches → PR to `develop` ([CONTRIBUTING.md](https://github.com/violinadoley/JIVANA/blob/develop/CONTRIBUTING.md)). Commits under your GitHub user — no Cursor co-author trailers.
 
-**Secrets:** Only `GEMINI_API_KEY` is required for local AI. Optional Firebase vars for sign-in; optional `gcloud auth application-default login` for full GCP features locally.
+**Env (see onboarding doc for full list):**
+
+- **Minimum:** `GEMINI_API_KEY` + `NEXT_PUBLIC_API_URL` (in-memory med rec — restarts wipe cases).
+- **Recommended:** also Firebase web vars (`NEXT_PUBLIC_FIREBASE_*`) + backend `FIREBASE_PROJECT_ID` / bucket + `gcloud auth application-default login` (shared Firestore like prod).
+- **Full GCP:** copy integration IDs from team vault / GitHub Variables (Document AI, Vertex Search, FHIR, BigQuery) into `backend/.env`.
 
 Ping me if you’re stuck on env or deploy access.
