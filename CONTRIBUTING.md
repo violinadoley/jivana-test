@@ -73,7 +73,7 @@ Never commit API keys, `.env`, service account JSON, or certificates. Use `.env.
 
 ## AI changes
 
-Version prompts under `backend/app/ai/prompts/`. Update `ai-evals/` when behavior expectations change. See [docs/evaluation/README.md](docs/evaluation/README.md).
+Version prompts under `backend/app/ai/prompts/`. Update `ai-evals/` when behavior expectations change. See [ai-evals/README.md](ai-evals/README.md).
 
 ## Code review
 

@@ -1,8 +1,9 @@
 "use client";
 
-import { LogIn, LogOut } from "lucide-react";
+import { Login01Icon, Logout01Icon } from "@hugeicons/core-free-icons";
 
 import { Button } from "@/components/ui/button";
+import { HugeIcon } from "@/components/ui/huge-icon";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function LoginButton() {
@@ -19,7 +20,7 @@ export function LoginButton() {
   if (!configured) {
     return (
       <Button variant="outline" size="sm" disabled title="Configure Firebase env vars">
-        Sign in (Firebase not configured)
+        Sign in
       </Button>
     );
   }
@@ -27,7 +28,7 @@ export function LoginButton() {
   if (user) {
     return (
       <Button variant="outline" size="sm" onClick={() => logout()}>
-        <LogOut className="mr-2 size-4" />
+        <HugeIcon icon={Logout01Icon} size={16} className="mr-2" />
         Sign out
       </Button>
     );
@@ -35,7 +36,7 @@ export function LoginButton() {
 
   return (
     <Button size="sm" onClick={() => loginWithGoogle().catch(console.error)}>
-      <LogIn className="mr-2 size-4" />
+      <HugeIcon icon={Login01Icon} size={16} className="mr-2" />
       Sign in
     </Button>
   );

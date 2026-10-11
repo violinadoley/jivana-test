@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-echo "AI Hackathon Starter — local development"
+echo "JIVANA — local development"
 echo ""
 echo "Terminal 1 — Backend:"
 echo "  cd \"$ROOT/backend\""

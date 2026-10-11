@@ -6,12 +6,19 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versio
 
 ## [Unreleased]
 
-_Competition-specific product work._
+_JIVANA product and documentation on the v1.0.0 platform._
+
+### Added
+
+- JIVANA workspace: med rec workbench, enterprise tabs, SMART launch, platform capabilities
+- Team onboarding, environment variable reference, docs index (`docs/README.md`)
+- Backend and frontend package READMEs
 
 ### Changed
 
-- Deploy workflows: `contents: write` for repo homepage; no `continue-on-error` on publish steps
-- Docs: GitHub token permissions, PostHog key rotation, Firebase rules fallback (CI is primary)
+- Documentation aligned to JIVANA (architecture, roadmap, starter-template)
+- Deploy workflows: SMART/site URL/Agent Engine env passthrough; hosted Playwright smoke after frontend deploy
+- Removed redundant `docs/evaluation/README.md` (use `ai-evals/README.md`)
 
 ## [1.0.0] - 2026-10-09
 

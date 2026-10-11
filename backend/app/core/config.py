@@ -39,6 +39,32 @@ class Settings(BaseSettings):
     document_ai_location: str = Field(default="us", alias="DOCUMENT_AI_LOCATION")
     vertex_model: str = Field(default="gemini-2.5-flash", alias="VERTEX_GEMINI_MODEL")
 
+    healthcare_dataset_id: str | None = Field(default=None, alias="HEALTHCARE_DATASET_ID")
+    healthcare_fhir_store_id: str | None = Field(default=None, alias="HEALTHCARE_FHIR_STORE_ID")
+    healthcare_location: str = Field(default="us-central1", alias="HEALTHCARE_LOCATION")
+
+    vertex_search_data_store_id: str | None = Field(
+        default=None, alias="VERTEX_SEARCH_DATA_STORE_ID"
+    )
+    vertex_search_location: str = Field(default="global", alias="VERTEX_SEARCH_LOCATION")
+    vertex_search_serving_config: str = Field(
+        default="default_search", alias="VERTEX_SEARCH_SERVING_CONFIG"
+    )
+
+    bigquery_dataset_id: str | None = Field(default=None, alias="BIGQUERY_DATASET_ID")
+    bigquery_productivity_table: str = Field(
+        default="productivity_events", alias="BIGQUERY_PRODUCTIVITY_TABLE"
+    )
+
+    # legacy | adk | auto (prefer ADK when google-adk is installed)
+    agent_backend: str = Field(default="auto", alias="AGENT_BACKEND")
+    # Optional hosted runtime (Agent Engine). In-process ADK used when unset.
+    vertex_agent_engine_id: str | None = Field(default=None, alias="VERTEX_AGENT_ENGINE_ID")
+
+    smart_client_id: str | None = Field(default=None, alias="SMART_CLIENT_ID")
+    smart_fhir_iss: str | None = Field(default=None, alias="SMART_FHIR_ISS")
+    smart_app_launch_url: str | None = Field(default=None, alias="SMART_APP_LAUNCH_URL")
+
     @property
     def effective_gcp_project_id(self) -> str | None:
         return self.gcp_project_id or self.firebase_project_id
@@ -46,6 +72,23 @@ class Settings(BaseSettings):
     @property
     def document_ai_configured(self) -> bool:
         return bool(self.document_ai_processor_id and self.document_ai_processor_id.strip())
+
+    @property
+    def healthcare_fhir_configured(self) -> bool:
+        return bool(
+            self.healthcare_dataset_id
+            and self.healthcare_dataset_id.strip()
+            and self.healthcare_fhir_store_id
+            and self.healthcare_fhir_store_id.strip()
+        )
+
+    @property
+    def vertex_search_configured(self) -> bool:
+        return bool(self.vertex_search_data_store_id and self.vertex_search_data_store_id.strip())
+
+    @property
+    def bigquery_analytics_configured(self) -> bool:
+        return bool(self.bigquery_dataset_id and self.bigquery_dataset_id.strip())
 
     @property
     def effective_vertex_location(self) -> str:
@@ -69,6 +112,14 @@ class Settings(BaseSettings):
     @property
     def firebase_configured(self) -> bool:
         return bool(self.firebase_project_id)
+
+    @property
+    def vertex_agent_engine_configured(self) -> bool:
+        return bool(self.vertex_agent_engine_id and self.vertex_agent_engine_id.strip())
+
+    @property
+    def smart_on_fhir_configured(self) -> bool:
+        return bool(self.smart_client_id and self.smart_app_launch_url)
 
 
 @lru_cache

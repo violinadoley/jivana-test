@@ -1,40 +1,39 @@
-# Starter template (platform complete)
+# Platform baseline (v1.0.0)
 
-This document marks the **infrastructure starter** as complete. Competition-specific product work starts after this point.
+The repository began as an **AI hackathon starter**; **JIVANA** is the product built on that platform. Infrastructure below remains the foundation for all features.
 
-## What is included
+## Platform capabilities
 
 | Capability | Where |
 |------------|--------|
 | CI (lint, test, security, e2e) | `.github/workflows/ci.yml` |
 | API deploy (Cloud Run + WIF) | `.github/workflows/deploy.yml` |
-| UI deploy (Firebase Hosting + rules) | `.github/workflows/deploy-frontend.yml` (`deploy-hosting`, `deploy-firebase-rules`) |
-| Gemini HTTP API | `POST /api/v1/ai/generate` |
+| UI deploy (Firebase Hosting + rules) | `.github/workflows/deploy-frontend.yml` |
+| Gemini + ADK on API | `backend/app/ai/` |
 | File upload + GCS | `POST /api/v1/files/upload` |
-| Activity feed | `GET /api/v1/activity`, dashboard **Recent activity** |
+| Activity feed | `GET /api/v1/activity` |
 | Google sign-in | Firebase Auth + optional `AUTH_REQUIRED` |
-| Security policy | [security-defaults.md](security-defaults.md), Gitleaks + pip-audit in CI |
-| Product analytics (optional) | [setup/posthog.md](setup/posthog.md) — funnels & demo evidence, not AI quality |
+| Security | [security-defaults.md](security-defaults.md), Gitleaks, pip-audit |
+
+## JIVANA product (on `develop`)
+
+Discharge med rec workbench, enterprise workspace tabs, Vertex Search, Document AI, FHIR export, SMART launch, BigQuery events — see [product/jivana-design-and-operations.md](product/jivana-design-and-operations.md) and [product/backlog.md](product/backlog.md).
 
 ## First-time GCP / GitHub setup
 
-1. [github-google-oidc.md](setup/github-google-oidc.md)
-2. [firebase-hosting.md](setup/firebase-hosting.md)
-3. [firebase-backend.md](setup/firebase-backend.md)
+1. [setup/github-google-oidc.md](setup/github-google-oidc.md)
+2. [setup/firebase-hosting.md](setup/firebase-hosting.md)
+3. [setup/firebase-backend.md](setup/firebase-backend.md)
 
-## Architecture and tooling reference
+## New team members
 
-- [architecture/technology-decision-process.md](architecture/technology-decision-process.md)
+[development/team-onboarding.md](development/team-onboarding.md) · [development/environment-variables.md](development/environment-variables.md)
+
+## Architecture reference
+
 - [architecture/technology-capability-matrix.md](architecture/technology-capability-matrix.md)
-- [architecture/mcp-and-tooling-catalogue.md](architecture/mcp-and-tooling-catalogue.md)
-- [architecture/healthcare-google-cloud.md](architecture/healthcare-google-cloud.md) — [Cloud Healthcare API](https://docs.cloud.google.com/healthcare-api/docs) (healthcare track)
-
-## Day-to-day workflow
-
-1. Branch from `develop` → PR → merge to `develop` (deploys API + frontend).
-2. Periodically merge `develop` → `main` for a stable snapshot (no extra deploy on `main` alone).
-3. Customize prompts under `backend/app/ai/`, routes under `backend/app/api/`, UI under `frontend/`.
+- [architecture/technology-decision-process.md](architecture/technology-decision-process.md)
 
 ## Version
 
-Starter baseline: **v1.0.0** (see [CHANGELOG](../CHANGELOG.md)).
+Platform tagged **v1.0.0** — see [CHANGELOG](../CHANGELOG.md).

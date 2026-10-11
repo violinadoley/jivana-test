@@ -97,6 +97,8 @@ jobs:
           NEXT_PUBLIC_APP_ENV: cloud
           NEXT_PUBLIC_POSTHOG_ENABLED: ${{ vars.NEXT_PUBLIC_POSTHOG_ENABLED }}
           NEXT_PUBLIC_POSTHOG_SESSION_REPLAY: ${{ vars.NEXT_PUBLIC_POSTHOG_SESSION_REPLAY }}
+          NEXT_PUBLIC_MVP_WORKBENCH: "true"
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
 
       - name: Configure hosting site id
         run: |
@@ -111,6 +113,29 @@ jobs:
           SITE="https://${{ vars.GCP_PROJECT_ID }}.web.app"
           echo "::notice title=Frontend (Firebase Hosting)::${SITE}"
           echo "To set the GitHub repo Website link, run: ./scripts/set-github-repo-links.sh \"${SITE}\" \"<your-cloud-run-url>/docs\""
+
+  hosted-smoke:
+    needs: deploy-hosting
+    if: vars.GCP_PROJECT_ID != '' && vars.PUBLIC_API_URL != ''
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      - name: Deployed hosting smoke
+        run: npm run test:e2e:deployed
+        env:
+          PLAYWRIGHT_BASE_URL: https://${{ vars.GCP_PROJECT_ID }}.web.app
 
   deploy-firebase-rules:
     needs: deploy-hosting

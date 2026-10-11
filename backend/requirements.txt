@@ -1,9 +1,13 @@
-fastapi>=0.142.2
+# Cap below 0.142.1: FastAPI 0.142.1+ pulls opentelemetry-api>=1.44, which conflicts with google-adk (<=1.42.1).
+fastapi>=0.140.0,<0.142.1
 uvicorn[standard]>=0.32.0
 pydantic-settings>=2.15.0
 google-genai>=1.0.0
+google-adk>=2.11.0
 firebase-admin>=7.7.0
 google-cloud-storage>=2.18.0
 python-multipart>=0.0.12
 google-cloud-documentai>=2.30.0
+google-cloud-discoveryengine>=0.13.0
+google-cloud-bigquery>=3.27.0
 pypdf>=5.0.0

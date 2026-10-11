@@ -1,10 +1,11 @@
 "use client";
 
-import { FileUp, Loader2 } from "lucide-react";
+import { Loading03Icon, Upload04Icon } from "@hugeicons/core-free-icons";
 import { useCallback, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
+import { HugeIcon } from "@/components/ui/huge-icon";
 import { cn } from "@/lib/utils";
 import {
   Card,
@@ -84,10 +85,10 @@ export function FileUpload() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>File upload</CardTitle>
+        <CardTitle>General file intake</CardTitle>
         <CardDescription>
-          PDF, PNG, JPEG, or TXT. Validated on the API; stored in Cloud Storage when
-          the backend bucket is configured.
+          Attach supporting files to the workspace. Validated on the API and stored
+          in Cloud Storage when configured.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -98,11 +99,11 @@ export function FileUpload() {
           }}
           onDragLeave={() => setDragOver(false)}
           onDrop={onDrop}
-          className={`flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-8 text-center transition-colors ${
-            dragOver ? "border-primary bg-muted/40" : "border-muted-foreground/30"
+          className={`flex flex-col items-center justify-center gap-3 border border-dashed p-8 text-center ${
+            dragOver ? "bg-muted/50" : "border-border"
           }`}
         >
-          <FileUp className="size-8 text-muted-foreground" />
+          <HugeIcon icon={Upload04Icon} size={32} className="text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
             Drag and drop a file, or choose one below.
           </p>
@@ -115,7 +116,11 @@ export function FileUpload() {
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 size-4 animate-spin" />
+                <HugeIcon
+                  icon={Loading03Icon}
+                  size={16}
+                  className="mr-2 animate-spin"
+                />
                 Uploading…
               </>
             ) : (
@@ -139,7 +144,7 @@ export function FileUpload() {
         )}
 
         {result && (
-          <div className="rounded-lg bg-muted/50 p-4 text-sm space-y-1">
+          <div className="space-y-1 border border-border bg-muted/40 p-4 text-sm">
             <p>
               <span className="font-medium">File:</span> {result.filename}
             </p>

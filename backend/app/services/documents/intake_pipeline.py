@@ -9,6 +9,7 @@ from app.core.exceptions import (
     FileUploadError,
 )
 from app.schemas.meddocs import (
+    CaseStatus,
     DocumentMeta,
     EvidenceStatus,
     ExtractedField,
@@ -24,7 +25,6 @@ from app.services.documents.document_ai_service import DocumentAIService
 from app.services.documents.document_store import DocumentStore
 from app.services.documents.job_status import apply_status_to_job
 from app.services.documents.med_reconciler import ReconcileInput, reconcile_medications
-from app.services.documents.module2_export import on_reconciliation_completed
 from app.services.documents.normalizers import normalize_medication_name
 from app.services.documents.source_block_catalog import SourceBlockCatalog
 from app.services.documents.source_block_resolver import resolve_vertex_output
@@ -33,6 +33,15 @@ from app.services.documents.vertex_gemini_service import VertexGeminiMeddocsServ
 from app.services.storage.storage_service import ALLOWED_CONTENT_TYPES, StorageService
 
 logger = logging.getLogger(__name__)
+
+# Document AI processors target PDF/images; plain text uses direct extraction + Vertex.
+_DOCUMENT_AI_CONTENT_TYPES = frozenset(
+    {
+        "application/pdf",
+        "image/png",
+        "image/jpeg",
+    }
+)
 
 
 class UploadedPart:
@@ -62,24 +71,39 @@ class MeddocsIntakePipeline:
         files: list[UploadedPart],
         owner_uid: str | None,
         expected_hashes: set[str] | None = None,
+        existing_job: MedReconciliationJob | None = None,
     ) -> MedReconciliationJob:
         if len(files) < 1 or len(files) > 3:
             raise FileUploadError("Upload 1 to 3 documents for reconciliation.")
 
         started = datetime.now(UTC)
-        job_id = uuid.uuid4().hex
-        job = MedReconciliationJob(
-            job_id=job_id,
-            owner_uid=owner_uid,
-            status=JobStatus.PROCESSING,
-            metrics=JobMetrics(started_at=started.isoformat()),
-        )
-        self._store.save_job(job)
+        if existing_job:
+            job = existing_job
+            job.status = JobStatus.PROCESSING
+            job.case_status = CaseStatus.PROCESSING
+            job.metrics.started_at = started.isoformat()
+            self._store.update_job(job)
+        else:
+            job_id = uuid.uuid4().hex
+            job = MedReconciliationJob(
+                job_id=job_id,
+                owner_uid=owner_uid,
+                status=JobStatus.PROCESSING,
+                case_status=CaseStatus.PROCESSING,
+                metrics=JobMetrics(started_at=started.isoformat()),
+            )
+            self._store.save_job(job)
+
+        if self._settings.is_production and not self._document_ai.is_configured:
+            raise DocumentAIConfigurationError(
+                "Document AI is required in cloud/production. Set DOCUMENT_AI_PROCESSOR_ID."
+            )
 
         try:
             self._document_ai.verify_processor_if_configured()
         except DocumentAIConfigurationError as exc:
             job.status = JobStatus.FAILED
+            job.case_status = CaseStatus.FAILED
             job.error_code = exc.code
             job.error_message = exc.message
             self._store.update_job(job)
@@ -155,8 +179,6 @@ class MeddocsIntakePipeline:
 
         apply_status_to_job(job)
         self._store.update_job(job)
-        if job.status == JobStatus.COMPLETED:
-            on_reconciliation_completed(job)
         return job
 
     def _validate_upload(self, part: UploadedPart) -> None:
@@ -170,7 +192,10 @@ class MeddocsIntakePipeline:
     def _build_blocks(
         self, document_id: str, part: UploadedPart, job: MedReconciliationJob
     ) -> list[SourceBlock]:
-        if self._document_ai.is_configured:
+        use_document_ai = (
+            self._document_ai.is_configured and part.content_type in _DOCUMENT_AI_CONTENT_TYPES
+        )
+        if use_document_ai:
             try:
                 blocks = self._document_ai.process_to_blocks(
                     document_id, part.data, part.content_type
@@ -195,6 +220,8 @@ class MeddocsIntakePipeline:
                         requires_review=True,
                     )
                 )
+            if self._settings.is_production or self._settings.document_ai_configured:
+                raise FileUploadError(f"Document AI produced no usable blocks for {part.filename}.")
 
         pages = extract_text_pages(part.data, part.content_type)
         vertex_blocks: list[SourceBlock] = []

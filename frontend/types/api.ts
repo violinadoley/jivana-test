@@ -20,7 +20,16 @@ export type FileUploadResponse = {
   storage_key: string | null;
 };
 
-export type ActivityType = "ai_generate" | "file_upload";
+export type ActivityType =
+  | "ai_generate"
+  | "file_upload"
+  | "meddocs_reconciliation"
+  | "meddocs_review"
+  | "copilot_chat"
+  | "meeting_intelligence"
+  | "research"
+  | "workflow_agent"
+  | "enterprise_search";
 
 export type ActivityItem = {
   id: string;

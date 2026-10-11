@@ -29,7 +29,17 @@ async def list_activity(
     for row in activity.list_recent(user_id=uid, limit=limit):
         created = ActivityService.parse_timestamp(row.get("created_at"))
         item_type = row.get("type")
-        if item_type not in ("ai_generate", "file_upload"):
+        if item_type not in (
+            "ai_generate",
+            "file_upload",
+            "meddocs_reconciliation",
+            "meddocs_review",
+            "copilot_chat",
+            "meeting_intelligence",
+            "research",
+            "workflow_agent",
+            "enterprise_search",
+        ):
             continue
         items.append(
             ActivityItem(

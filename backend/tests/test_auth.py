@@ -7,8 +7,13 @@ from fastapi.testclient import TestClient
 
 
 class FakeAIService(AIService):
-    def generate_text(self, prompt: str) -> str:
+    def generate_text(self, prompt: str, *, institutional_context: str = "") -> str:
+        del institutional_context
         return f"Echo: {prompt}"
+
+    def generate_from_template(self, version: str, name: str, **replacements: str) -> str:
+        del version, name, replacements
+        return "Synthetic assistant response for tests."
 
 
 @pytest.fixture
