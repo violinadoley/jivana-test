@@ -2,6 +2,8 @@
 
 How to run the app locally, which secrets to share with teammates, and how the stack fits together.
 
+**Inviting someone?** Copy the blurb from [team-invite-message.md](./team-invite-message.md).
+
 **Do not commit** `.env`, `.env.local`, service account JSON, or API keys. Share secrets through your team password manager or GitHub Actions secrets/variables — never in Slack or email in plain text.
 
 ## Prerequisites
