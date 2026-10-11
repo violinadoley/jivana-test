@@ -19,7 +19,11 @@
 - [ ] Full SMART OAuth token exchange + patient context session
 - [ ] Deploy agents to Vertex AI Agent Engine and set `VERTEX_AGENT_ENGINE_ID`
 - [x] `SMART_APP_LAUNCH_URL`, `SMART_FHIR_ISS`, `NEXT_PUBLIC_SITE_URL` on GitHub Variables
-- [ ] `SMART_CLIENT_ID` (OAuth Web client — Console step in [smart-on-fhir.md](../setup/smart-on-fhir.md))
+- [x] `SMART_CLIENT_ID` (OAuth Web client — [smart-on-fhir.md](../setup/smart-on-fhir.md))
+
+## Cleanup (low priority)
+
+- [ ] Remove legacy eight-tab `WorkspaceShell` after teams confirm no `NEXT_PUBLIC_MVP_WORKBENCH=false` usage
 
 ## Competition / polish
 
