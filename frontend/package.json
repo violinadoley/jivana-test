@@ -37,7 +37,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^10",
-    "eslint-config-next": "16.4.0",
+    "eslint-config-next": "16.4.2",
     "serve": "^14.2.6",
     "shadcn": "^4.21.4",
     "tailwindcss": "^4",
